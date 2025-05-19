@@ -90,12 +90,13 @@ const allProducts = [
   },
 ];
 
+
 const HomePage: React.FC = () => {
-  const [selectedCategory, setSelectedCategory] = useState("All");
+  const [selectedCategory, setSelectedCategory] = useState("Todos");
   const [selectedProduct, setSelectedProduct] = useState<null | typeof allProducts[0]>(null);
 
   const filteredProducts =
-    selectedCategory === "All"
+    selectedCategory === "Todos"
       ? allProducts
       : allProducts.filter((p) => p.category === selectedCategory);
 
@@ -275,6 +276,8 @@ const HomePage: React.FC = () => {
           </div>
         </section>
       )}
+
+
 
       {/* Footer */}
       <footer className="bg-white py-6 mt-10 text-center border-t rounded-2xl">
