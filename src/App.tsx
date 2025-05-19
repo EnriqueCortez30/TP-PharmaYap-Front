@@ -6,13 +6,13 @@ import { ShoppingCart, LogIn, Search } from "lucide-react";
 import './index.css' 
 
 const categories = [
-  "All",
-  "Bone & Joint care",
-  "Diabetes Care",
-  "Kidney Care",
-  "Liver Care",
-  "Respiratory Care",
-  "Eye Care",
+  "Todos",
+  "Cuidado de articulaciones",
+  "Cuidado de la diabetes",
+  "Cuidado renal",
+  "Cuidado del hígado",
+  "Cuidado respiratorio",
+  "Cuidado de los ojos",
 ];
 
 const allProducts = [
@@ -20,7 +20,7 @@ const allProducts = [
     id: 1,
     name: "Calcium Tablets",
     description: "Helps strengthen bones and joints.",
-    category: "Bone & Joint care",
+    category: "Cuidado de articulaciones",
     price: 80,
     stock: 12,
     image: "/images/calcium.jpg",
@@ -29,7 +29,7 @@ const allProducts = [
     id: 2,
     name: "Joint Cream",
     description: "Relieves joint pain quickly.",
-    category: "Bone & Joint care",
+    category: "Cuidado de articulaciones",
     price: 60,
     stock: 10,
     image: "/images/jointcream.jpg",
@@ -38,7 +38,7 @@ const allProducts = [
     id: 3,
     name: "Glucose Monitor",
     description: "Accurate glucose monitoring at home.",
-    category: "Diabetes Care",
+    category: "Cuidado de la diabetes",
     price: 150,
     stock: 6,
     image: "/images/glucose.jpg",
@@ -47,7 +47,7 @@ const allProducts = [
     id: 4,
     name: "Insulin Pen",
     description: "Easy-to-use insulin injector.",
-    category: "Diabetes Care",
+    category: "Cuidado de la diabetes",
     price: 110,
     stock: 8,
     image: "/images/insulin.jpg",
@@ -56,7 +56,7 @@ const allProducts = [
     id: 5,
     name: "Kidney Flush",
     description: "Supports kidney cleansing.",
-    category: "Kidney Care",
+    category: "Cuidado renal",
     price: 90,
     stock: 5,
     image: "/images/kidneyflush.jpg",
@@ -65,7 +65,7 @@ const allProducts = [
     id: 6,
     name: "Liver Detox",
     description: "Promotes healthy liver function.",
-    category: "Liver Care",
+    category: "Cuidado del hígado",
     price: 95,
     stock: 4,
     image: "/images/liver.jpg",
@@ -74,7 +74,7 @@ const allProducts = [
     id: 7,
     name: "Inhaler",
     description: "Quick relief for respiratory issues.",
-    category: "Respiratory Care",
+    category: "Cuidado respiratorio",
     price: 70,
     stock: 9,
     image: "/images/inhaler.jpg",
@@ -83,7 +83,7 @@ const allProducts = [
     id: 8,
     name: "Eye Drops",
     description: "Soothes dry and irritated eyes.",
-    category: "Eye Care",
+    category: "Cuidado de los ojos",
     price: 30,
     stock: 15,
     image: "/images/eyedrops.jpg",
@@ -110,19 +110,19 @@ const HomePage: React.FC = () => {
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
             <input
               type="text"
-              placeholder="Medicine and healthcare items"
+              placeholder="Medicamentos y artículos sanitarios"
               className="border text-base p-3 pl-10 rounded-xl w-80 focus:outline-none focus:ring-2 focus:ring-green-500 transition duration-300"
             />
           </div>
         </div>
         <div className="flex gap-6 items-center text-base">
           <button className="relative bg-gray-200 px-4 py-2 rounded-xl">
-            Offers
+            Ofertas
             <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-600 rounded-full animate-ping"></span>
             <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-600 rounded-full"></span>
           </button>
           <button className="flex items-center gap-2 px-4 py-2 rounded-xl">
-            <ShoppingCart size={20} /> Cart
+            <ShoppingCart size={20} /> Carrito
           </button>
           <button className="flex items-center gap-2 px-4 py-2 rounded-xl">
             <LogIn size={20} /> Login
@@ -134,13 +134,14 @@ const HomePage: React.FC = () => {
 
 
       {/* Hero */}
-      <section className="bg-green-100 p-10 text-center rounded-2xl mb-6">
-        <h1 className="text-6xl font-bold text-green-900">Pharmacy</h1>
-        <p className="max-w-xl mx-auto mt-4 text-lg">
-          Online medicine delivery is the process of ordering medications through a website or app and having them delivered to your doorstep.
+      <section className="bg-[#FAD1D8] p-10 text-center rounded-2xl mb-6">
+        <h1 className="text-6xl font-bold text-[#B73852]">PharmaYap</h1>
+        <p className="max-w-xl mx-auto mt-4 text-lg text-[#6B2C3B]">
+          En PharmaYap, hacemos que cuidar tu salud sea más fácil. Con nuestro servicio de envío de medicamentos a domicilio, puedes realizar tu pedido en línea desde nuestra web o app y recibir tus productos de forma rápida, segura y sin complicaciones, directamente en la puerta de tu hogar.
+          ¡Olvídate de las filas y gana tiempo para lo que realmente importa!
         </p>
         <div className="mt-6">
-          <button className="bg-green-600 text-white px-4 py-2 rounded">
+          <button className="bg-[#ED8698] text-white px-4 py-2 rounded hover:bg-[#dc546c] transition">
             Order Via Prescription
           </button>
         </div>
@@ -148,9 +149,12 @@ const HomePage: React.FC = () => {
 
 
 
+
+
+
       {/* Categories */}
       <section className="py-6 bg-white rounded-2xl mb-6">
-        <h2 className="text-2xl font-bold text-center mb-6">Categories</h2>
+        <h2 className="text-2xl font-bold text-center mb-6 text-[#B73852]">Categorias</h2>
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 px-4">
           {categories.slice(1).map((cat) => (
             <div
@@ -164,11 +168,14 @@ const HomePage: React.FC = () => {
         </div>
       </section>
 
+
+
+
       {/* Deals Section */}
       <section className="py-10 px-4 bg-white rounded-2xl mb-6">
         <div className="flex justify-between items-center mb-6">
-          <h2 className="text-2xl font-bold text-gray-800">Today's best deals for you!</h2>
-          <a href="#" className="text-sm text-green-600 hover:underline">See all products →</a>
+          <h2 className="text-2xl font-bold text-[#B73852]">Today's best deals for you!</h2>
+          <a href="#" className="text-sm text-[#B73852] hover:underline">Ver todos los productos →</a>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {allProducts.slice(0, 4).map((product) => (
@@ -184,8 +191,10 @@ const HomePage: React.FC = () => {
                   <p className="text-xs text-gray-500 mb-2">{product.category}</p>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-green-600 font-bold text-lg">${product.price}</span>
-                  <button className="text-sm border px-3 py-1 rounded-full hover:bg-gray-800 hover:text-white">
+                  {/* Precio con color del Hero */}
+                  <span className="font-bold text-lg text-[#EFAFA2]">${product.price}</span>
+                  {/* Botón con hover rojo oscuro */}
+                  <button className="text-sm border border-red-600 text-red-700 px-3 py-1 rounded-full hover:bg-red-600 hover:text-white transition">
                     + Agregar
                   </button>
                 </div>
@@ -195,22 +204,28 @@ const HomePage: React.FC = () => {
         </div>
       </section>
 
+
       {/* Browse by Category Section */}
       <section className="py-10 px-4 bg-white rounded-2xl mb-6">
-        <h2 className="text-2xl font-bold text-gray-800 mb-4">Browse by Category</h2>
+        <h2 className="text-2xl font-bold text-[#B73852] mb-4">Explorar por categoría</h2>
         <div className="flex gap-3 flex-wrap mb-6">
           {categories.map((cat) => (
             <button
               key={cat}
               onClick={() => setSelectedCategory(cat)}
-              className={`px-4 py-2 rounded-full border ${
-                selectedCategory === cat ? "bg-green-600 text-white" : "bg-gray-100 text-gray-700"
-              } hover:bg-green-500 hover:text-white transition`}
+              className={`px-4 py-2 rounded-full border transition ${
+                selectedCategory === cat
+                  ? "bg-[#E87085] text-white border-transparent"
+                  : "bg-gray-100 text-gray-700 hover:bg-[#DC546C] hover:text-white hover:border-[#DC546C]"
+              }`}
             >
               {cat}
             </button>
           ))}
         </div>
+
+
+
 
         {/* Lista de productos filtrados */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
@@ -241,7 +256,7 @@ const HomePage: React.FC = () => {
       {/* Detalle del producto */}
       {selectedProduct && (
         <section className="py-10 px-4 bg-white rounded-2xl mb-6">
-          <h2 className="text-2xl font-bold text-gray-800 mb-4">Product Details</h2>
+          <h2 className="text-2xl font-bold text-[#B73852] mb-4">Product Details</h2>
           <div className="flex flex-col md:flex-row gap-6">
             <div className="h-64 w-full md:w-1/2 bg-gray-200 rounded-xl" />
             <div className="flex-1">
