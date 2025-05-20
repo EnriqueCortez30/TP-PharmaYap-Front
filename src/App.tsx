@@ -1,9 +1,8 @@
 import React from "react";
-import { useState } from 'react'
-import reactLogo from '.assets/LOGO_PHARMAYAP PNG(1).png'
-import viteLogo from '/vite.svg'
-import { ShoppingCart, LogIn, Search } from "lucide-react";
+import { useState, useRef } from 'react'
+import { ShoppingCart, LogIn, Search, Menu } from "lucide-react";
 import './index.css' 
+
 
 const categories = [
   "Todos",
@@ -25,7 +24,6 @@ const allProducts = [
     description: "Es un producto que atenua el espasmo muscular y la inflamación, reduce el proceso de degeneración del tejido cartilaginoso y mejora su metabolismo.",
     category: "Cuidado de articulaciones",
     price: 80,
-    stock: 12,
     image: "https://dcuk1cxrnzjkh.cloudfront.net/seller/1686676142018L.jpg",
   },
   {
@@ -34,7 +32,6 @@ const allProducts = [
     description: "",
     category: "Cuidado de articulaciones",
     price: 60,
-    stock: 10,
     image: "https://dcuk1cxrnzjkh.cloudfront.net/seller/1681698059935L.jpg",
   },
   {
@@ -43,7 +40,6 @@ const allProducts = [
     description: "Indicado para aliviar y controlar los síntomas de la diabetes para de esta manera mejorar su salud de manera natural. Los ingredientes activos de Glyconorm regulan los niveles de azúr",
     category: "Cuidado de la diabetes",
     price: 150,
-    stock: 6,
     image: "https://dcuk1cxrnzjkh.cloudfront.net/seller/1698082744009L.jpg",
   },
   {
@@ -52,113 +48,117 @@ const allProducts = [
     description: "Es una mezcla de alimentos,libre de azúcar y que puede ser consumido como parte de una alimentación saludable",
     category: "Cuidado de la diabetes",
     price: 110,
-    stock: 8,
     image: "https://dcuk1cxrnzjkh.cloudfront.net/imagesproducto/066780L.jpg",
   },
+
+
   {
     id: 5,
-    name: "Kidney Flush",
-    description: "Apoya la limpieza renal.",
+    name: "Losartán",
+    description: "Se utiliza en pacientes con nefropatía diabética o hipertensión para proteger el riñón y reducir la proteinuria.",
     category: "Cuidado renal",
     price: 90,
-    stock: 5,
-    image: "https://i.imgur.com/GkBdS8f.jpg",
+    image: "https://farmaciaslider.pe/my-assets/image/product/8d78e3c19f109aea7d6ee5c56991b89e.jpg",
   },
   {
     id: 6,
-    name: "Liver Detox",
-    description: "Favorece el buen funcionamiento del hígado.",
+    name: "Silimarina",
+    description: "Protector hepático natural. Derivado del cardo mariano, ayuda a regenerar células hepáticas y reducir la inflamación.",
     category: "Cuidado del hígado",
     price: 95,
-    stock: 4,
-    image: "https://i.imgur.com/OEIk7qH.jpg",
+    image: "https://res.cloudinary.com/riqra/image/upload/w_656,h_656,c_limit,q_auto,f_auto/v1643152268/sellers/salud-farma/products/igiuithhusw8dpjolzjm.png",
   },
   {
     id: 7,
-    name: "Inhaler",
-    description: "Alivio rápido para problemas respiratorios.",
+    name: "Ambroxol ",
+    description: "Actúa sobre las secreciones bronquiales haciendo que las flemas sean más fluidas, facilitando su expulsión mediante la tos.",
     category: "Cuidado respiratorio",
     price: 70,
-    stock: 9,
-    image: "https://i.imgur.com/6QK3MJS.jpg",
+    image: "https://www.hogarysalud.com.pe/wp-content/uploads/2024/10/75110-C2.jpg",
   },
   {
     id: 8,
-    name: "Eye Drops",
-    description: "Alivia ojos secos e irritados.",
+    name: "Cloranfenicol",
+    description: "Elimina bacterias causantes de infecciones oculares.",
     category: "Cuidado de los ojos",
     price: 30,
-    stock: 15,
-    image: "https://i.imgur.com/RGepPVy.jpg",
+    image: "https://dcuk1cxrnzjkh.cloudfront.net/imagesproducto/205052L.jpg",
   },
+
   {
     id: 9,
-    name: "Digestive Enzyme",
-    description: "Mejora la digestión después de las comidas.",
+    name: "Omeprazol",
+    description: "Bloquea la secreción ácida gástrica hasta 24 h.",
     category: "Salud digestiva",
     price: 50,
-    stock: 11,
-    image: "https://i.imgur.com/YoJK1nk.jpg",
+    image: "https://farmaciauniversalpe.vtexassets.com/arquivos/ids/158088/01984_1.jpg?v=638428792795700000",
   },
+
   {
     id: 10,
-    name: "Probiotic Complex",
-    description: "Fortalece la flora intestinal.",
+    name: "Sucralfato",
+    description: "Forma una barrera gel protectora sobre úlceras.",
     category: "Salud digestiva",
     price: 65,
-    stock: 7,
-    image: "https://i.imgur.com/Tlf3nVD.jpg",
+    image: "https://dcuk1cxrnzjkh.cloudfront.net/imagesproducto/034190L.jpg",
   },
+
+
   {
     id: 11,
-    name: "Omega 3",
-    description: "Mejora la salud cardiovascular.",
+    name: "	Enalapril",
+    description: "Relaja vasos y baja presión arterial, protege el corazón.",
     category: "Cuidado cardiovascular",
     price: 85,
-    stock: 10,
-    image: "https://i.imgur.com/0J5x2L3.jpg",
+    image: "https://farmaciauniversalpe.vtexassets.com/arquivos/ids/159455-800-auto?v=638591216595200000&width=800&height=auto&aspect=true",
   },
+
   {
     id: 12,
-    name: "Blood Pressure Monitor",
-    description: "Mide la presión arterial de forma precisa.",
+    name: "Metoprolol",
+    description: "Controla frecuencia y presión.",
     category: "Cuidado cardiovascular",
     price: 120,
-    stock: 6,
-    image: "https://i.imgur.com/SnJiKMS.jpg",
+    image: "https://farmaciaslider.pe/my-assets/image/product/8518f2c912d69b86e8f6dd754a198c48.jpg",
   },
+
+
+
   {
     id: 13,
-    name: "Vitamin C 1000mg",
-    description: "Apoya el sistema inmunológico.",
-    category: "Suplementos vitamínicos",
+    name: "Centrum",
+    description: "",
+    category: "Complejo multivitamínico con 26 nutrientes esenciales: vitaminas A–E, B1–B12, hierro, zinc, magnesio, etc.",
     price: 40,
-    stock: 18,
-    image: "https://i.imgur.com/r0jD4BB.jpg",
+    image: "https://rimage.ripley.com.pe/home.ripley/Attachment/MKP/1735/PMP20000174890/full_image-1.webp",
   },
+
+
+
   {
     id: 14,
-    name: "Multivitaminas Diarias",
-    description: "Complejo de vitaminas esenciales.",
+    name: "Neurobion",
+    description: "Contiene vitaminas B1, B6 y B12.",
     category: "Suplementos vitamínicos",
     price: 55,
-    stock: 20,
-    image: "https://i.imgur.com/4JzqjMn.jpg",
+    image: "https://dcuk1cxrnzjkh.cloudfront.net/imagesproducto/072581L.jpg",
   },
   {
     id: 15,
-    name: "Vitamina D3",
-    description: "Contribuye a la salud ósea e inmunitaria.",
+    name: "Vitaglobin",
+    description: "Hierro + vitamina C + B12 + ácido fólico + zinc.",
     category: "Suplementos vitamínicos",
     price: 45,
-    stock: 14,
-    image: "https://i.imgur.com/xKnmFY3.jpg",
+    image: "https://pharmacie-denni.dz/wp-content/uploads/2025/05/vitaglobin.jpg",
   },
 ];
 
 const HomePage: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState("Todos");
   const [selectedProduct, setSelectedProduct] = useState<null | typeof allProducts[0]>(null);
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  const detailRef = useRef<HTMLDivElement | null>(null); // 👈 Agregado
 
   const filteredProducts =
     selectedCategory === "Todos"
@@ -168,10 +168,13 @@ const HomePage: React.FC = () => {
   return (
     <div className="bg-gray-50 min-h-screen px-2 md:px-4">
       {/* Header */}
-      <header className="flex items-center justify-between py-4 bg-white shadow-md h-24 w-full rounded-2xl">
-        <div className="h-full flex items-center gap-6">
+      <header className="flex items-center justify-between py-4 bg-white shadow-md h-24 w-full rounded-2xl relative">
+        <div className="h-full flex items-center gap-4">
+          <button onClick={() => setMenuOpen(!menuOpen)} className="p-2 rounded-xl hover:bg-gray-100 transition">
+            <Menu size={28} className="text-[#B73852]" />
+          </button>
           <img src="/logo.png" alt="Company Logo" className="h-16 object-contain rounded-xl" />
-          <div className="relative">
+          <div className="relative ml-4">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
             <input
               type="text"
@@ -188,21 +191,41 @@ const HomePage: React.FC = () => {
             <LogIn size={20} /> Login
           </button>
         </div>
-      </header>
 
-      <div className="h-4" />
+        {menuOpen && (
+          <div className="absolute top-24 left-4 bg-[#FAD1D8] border border-[#F8AEBB] shadow-2xl rounded-2xl p-5 z-50 w-72 animate-fade-in">
+            <h3 className="text-xl font-bold mb-4 text-[#B73852] tracking-wide">Panel de Administración</h3>
+            <ul className="space-y-3">
+              {[
+                { name: "Productos", path: "/crud/productos" },
+                { name: "Categorías", path: "/crud/categorias" },
+                { name: "Clientes", path: "/crud/usuarios" },
+                { name: "Trabajadores", path: "/crud/pedidos" },
+                { name: "Proveedores", path: "/crud/proveedores" },
+              ].map((item) => (
+                <li key={item.path}>
+                  <a
+                    href={item.path}
+                    className="block bg-white rounded-xl px-4 py-2 text-[#B73852] hover:bg-[#DC546C] hover:text-white transition duration-300 shadow-sm hover:shadow-md"
+                  >
+                    {item.name}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+      </header>
 
       {/* Hero */}
       <section className="bg-[#FAD1D8] p-10 text-center rounded-2xl mb-6">
         <h1 className="text-6xl font-bold text-[#B73852]">PharmaYap</h1>
         <p className="max-w-xl mx-auto mt-4 text-lg text-[#6B2C3B]">
-          En PharmaYap, hacemos que cuidar tu salud sea más fácil. Con nuestro servicio de envío de medicamentos a domicilio, puedes realizar tu pedido en línea desde nuestra web o app y recibir tus productos de forma rápida, segura y sin complicaciones, directamente en la puerta de tu hogar.
-          ¡Olvídate de las filas y gana tiempo para lo que realmente importa!
+          En PharmaYap, hacemos que cuidar tu salud sea más fácil...
         </p>
       </section>
 
-    
-      {/* Browse by Category Section */}
+      {/* Categorías */}
       <section className="py-10 px-4 bg-white rounded-2xl mb-6">
         <h2 className="text-2xl font-bold text-[#B73852] mb-4">Explorar por categoría</h2>
         <div className="flex gap-3 flex-wrap mb-6">
@@ -221,26 +244,27 @@ const HomePage: React.FC = () => {
           ))}
         </div>
 
-        {/* Lista de productos filtrados */}
+        {/* Lista de productos */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {filteredProducts.map((product) => (
             <div
               key={product.id}
-              onClick={() => setSelectedProduct(product)}
+              onClick={() => {
+                setSelectedProduct(product);
+                setTimeout(() => {
+                  detailRef.current?.scrollIntoView({ behavior: "smooth" });
+                }, 100);
+              }}
               className="bg-gray-50 rounded-xl shadow-md hover:shadow-xl transition-shadow duration-300 cursor-pointer"
             >
-              <img
-                src={product.image}
-                alt={product.name}
-                className="h-36 w-full object-cover rounded-t-xl"
-              />
+              <img src={product.image} alt={product.name} className="h-36 w-full object-cover rounded-t-xl" />
               <div className="p-4 flex flex-col justify-between h-40">
                 <div>
                   <p className="text-base font-semibold text-gray-800">{product.name}</p>
                   <p className="text-xs text-gray-500 mb-2">{product.category}</p>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-green-600 font-bold text-lg">${product.price}</span>
+                  <span className="text-green-600 font-bold text-lg">S/. {product.price}</span>
                   <button className="text-sm border px-3 py-1 rounded-full hover:bg-gray-800 hover:text-white">
                     + Agregar
                   </button>
@@ -251,10 +275,9 @@ const HomePage: React.FC = () => {
         </div>
       </section>
 
-
       {/* Detalle del producto */}
       {selectedProduct && (
-        <section className="py-10 px-4 bg-white rounded-2xl mb-6">
+        <section ref={detailRef} className="py-10 px-4 bg-white rounded-2xl mb-6">
           <h2 className="text-2xl font-bold text-[#B73852] mb-4">Detalles del producto</h2>
           <div className="flex flex-col md:flex-row gap-6">
             <img
@@ -266,8 +289,7 @@ const HomePage: React.FC = () => {
               <p><strong>ID:</strong> {selectedProduct.id}</p>
               <p><strong>Nombre:</strong> {selectedProduct.name}</p>
               <p><strong>Descripción:</strong> {selectedProduct.description}</p>
-              <p><strong>Precio:</strong> ${selectedProduct.price}</p>
-              <p><strong>Stock:</strong> {selectedProduct.stock}</p>
+              <p><strong>Precio:</strong> S/. {selectedProduct.price}</p>
               <button
                 onClick={() => setSelectedProduct(null)}
                 className="mt-4 px-4 py-2 bg-gray-200 rounded hover:bg-gray-300"
