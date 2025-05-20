@@ -1,35 +1,55 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import React, { useState } from "react";
+import Proveedores from "./Proveedores";
 
-function App() {
-  const [count, setCount] = useState(0)
+export default function App() {
+  const [pagina, setPagina] = useState<"inicio" | "proveedores">("inicio");
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
+    <div className="flex min-h-screen">
+      {/* Menú lateral rojo fuerte */}
+      <nav className="w-48 bg-red-700 text-white p-6 flex flex-col space-y-4 shadow-lg">
+        <h1
+          className="text-2xl font-bold mb-6 cursor-pointer hover:text-red-300"
+          onClick={() => setPagina("inicio")}
+        >
+          PharmaYap
+        </h1>
+        <button
+          onClick={() => setPagina("inicio")}
+          className={`text-left px-3 py-2 rounded transition-colors duration-200 ${
+            pagina === "inicio"
+              ? "bg-red-900 font-semibold"
+              : "hover:bg-red-800"
+          }`}
+        >
+          Inicio
         </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
-}
+        <button
+          onClick={() => setPagina("proveedores")}
+          className={`text-left px-3 py-2 rounded transition-colors duration-200 ${
+            pagina === "proveedores"
+              ? "bg-red-900 font-semibold"
+              : "hover:bg-red-800"
+          }`}
+        >
+          Proveedores
+        </button>
+      </nav>
 
-export default App
+      {/* Contenido principal con fondo gris */}
+      <main className="flex-1 p-8 bg-gray-100">
+        {pagina === "inicio" && (
+          <div>
+            <h2 className="text-3xl font-bold text-red-700 mb-4">
+              Bienvenido a PharmaYap
+            </h2>
+            <p className="text-gray-700">
+              Esta es la página de inicio.
+            </p>
+          </div>
+        )}
+        {pagina === "proveedores" && <Proveedores />}
+      </main>
+    </div>
+  );
+}
