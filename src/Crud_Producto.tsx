@@ -13,6 +13,7 @@ import {
   FiEye
 } from 'react-icons/fi';
 
+
 interface Producto {
   codigo: string;
   nombre: string;
@@ -21,6 +22,7 @@ interface Producto {
   receta: string;
   imagen: string;
 }
+
 
 function App() {
   const [editProducto, setEditProducto] = useState<Producto | null>(null);
@@ -197,6 +199,14 @@ function App() {
               ))}
             </tbody>
           </table>
+
+          <div className="bg-gray-50 px-6 py-3 flex justify-between items-center text-sm text-gray-500">
+            <span>Mostrando {productos.length} de {productos.length} registros</span>
+            <div className="flex space-x-4">
+              <button className="text-[#ca5c71] hover:text-pink-700 disabled:text-gray-300" disabled>Anterior</button>
+              <button className="text-[#ca5c71] hover:text-pink-700">Siguiente</button>
+            </div>
+          </div>
         </div>
 
         {/* Modal Edición o Nuevo */}
