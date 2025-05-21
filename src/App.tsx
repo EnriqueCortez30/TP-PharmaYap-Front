@@ -244,6 +244,7 @@ const HomePage: React.FC = () => {
           ))}
         </div>
 
+
         {/* Lista de productos */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {filteredProducts.map((product) => (
@@ -275,6 +276,7 @@ const HomePage: React.FC = () => {
         </div>
       </section>
 
+
       {/* Detalle del producto */}
       {selectedProduct && (
         <section ref={detailRef} className="py-10 px-4 bg-white rounded-2xl mb-6">
@@ -300,6 +302,7 @@ const HomePage: React.FC = () => {
           </div>
         </section>
       )}
+
 
       {/* Footer */}
       <footer className="bg-white py-6 mt-10 text-center border-t rounded-2xl">
