@@ -10,7 +10,7 @@ type Proveedor = {
   telefono: string;
   correo: string;
   direccion: string;
-  tipoProveedor: string;
+  ruc: string;
   estado: string;
 };
 
@@ -21,7 +21,7 @@ const proveedoresIniciales: Proveedor[] = [
     telefono: "01 234 5678",
     correo: "contacto@saludsa.com",
     direccion: "Av. Salud 123, Lima",
-    tipoProveedor: "Local",
+    ruc: "20123456789",
     estado: "Activo",
   },
   {
@@ -30,7 +30,7 @@ const proveedoresIniciales: Proveedor[] = [
     telefono: "01 987 6543",
     correo: "ventas@farmasupplies.com",
     direccion: "Jr. Medicinas 456, Lima",
-    tipoProveedor: "Internacional",
+    ruc: "20456789123",
     estado: "Activo",
   },
 ];
@@ -47,7 +47,7 @@ export default function Proveedores() {
     telefono: "",
     correo: "",
     direccion: "",
-    tipoProveedor: "Local",
+    ruc: "",
     estado: "Activo",
   });
 
@@ -68,7 +68,7 @@ export default function Proveedores() {
       telefono: "",
       correo: "",
       direccion: "",
-      tipoProveedor: "Local",
+      ruc: "",
       estado: "Activo",
     });
     setEditId(null);
@@ -79,7 +79,8 @@ export default function Proveedores() {
       !nuevoProveedor.nombre.trim() ||
       !nuevoProveedor.telefono.trim() ||
       !nuevoProveedor.correo.trim() ||
-      !nuevoProveedor.direccion.trim()
+      !nuevoProveedor.direccion.trim() ||
+      !nuevoProveedor.ruc.trim()
     ) {
       alert("Por favor completa todos los campos");
       return;
@@ -116,7 +117,7 @@ export default function Proveedores() {
       telefono: p.telefono,
       correo: p.correo,
       direccion: p.direccion,
-      tipoProveedor: p.tipoProveedor,
+      ruc: p.ruc,
       estado: p.estado,
     });
     setEditId(p.id);
@@ -134,7 +135,7 @@ export default function Proveedores() {
       "Teléfono",
       "Correo",
       "Dirección",
-      "Tipo de Proveedor",
+      "RUC",
       "Estado",
     ];
 
@@ -143,7 +144,7 @@ export default function Proveedores() {
       p.telefono,
       p.correo,
       p.direccion,
-      p.tipoProveedor,
+      p.ruc,
       p.estado,
     ]);
 
@@ -179,7 +180,6 @@ export default function Proveedores() {
     URL.revokeObjectURL(url);
   }
 
-  // Nueva función para exportar PDF
   const exportarPDF = () => {
     if (proveedoresFiltrados.length === 0) {
       alert("No hay proveedores para exportar");
@@ -187,13 +187,13 @@ export default function Proveedores() {
     }
     const doc = new jsPDF();
     doc.text("Lista de Proveedores", 14, 20);
-    const columnas = ["Nombre", "Teléfono", "Correo", "Dirección", "Tipo", "Estado"];
+    const columnas = ["Nombre", "Teléfono", "Correo", "Dirección", "RUC", "Estado"];
     const filas = proveedoresFiltrados.map(p => [
       p.nombre,
       p.telefono,
       p.correo,
       p.direccion,
-      p.tipoProveedor,
+      p.ruc,
       p.estado,
     ]);
     autoTable(doc, {
@@ -208,7 +208,8 @@ export default function Proveedores() {
 
   const proveedoresFiltrados = proveedores.filter((p) =>
     p.nombre.toLowerCase().includes(search.toLowerCase()) ||
-    p.correo.toLowerCase().includes(search.toLowerCase())
+    p.correo.toLowerCase().includes(search.toLowerCase()) ||
+    p.ruc.includes(search)
   );
 
   return (
@@ -227,7 +228,7 @@ export default function Proveedores() {
       <div className="flex flex-col md:flex-row justify-between items-center mb-6 space-y-4 md:space-y-0">
         <input
           type="text"
-          placeholder="Buscar por nombre o correo..."
+          placeholder="Buscar por nombre, correo o RUC..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           className="border border-gray-300 rounded px-4 py-2 max-w-sm w-full"
@@ -276,7 +277,6 @@ export default function Proveedores() {
             aria-hidden="true"
           />
           <div className="relative bg-white p-6 rounded-xl shadow-xl w-full max-w-md mx-4">
-            {/* Botón cerrar "X" gris claro y texto gris oscuro */}
             <button
               className="absolute top-4 right-4 w-8 h-8 rounded-full bg-gray-200 text-gray-600 flex items-center justify-center hover:bg-gray-300 transition"
               onClick={() => setShowForm(false)}
@@ -285,7 +285,6 @@ export default function Proveedores() {
               &times;
             </button>
 
-            {/* Título con color #ca5c71 */}
             <h2 className="text-3xl font-bold mb-6" style={{ color: "#ca5c71" }}>
               {editId !== null ? "Editar Proveedor" : "Agregar Proveedor"}
             </h2>
@@ -358,19 +357,18 @@ export default function Proveedores() {
               </div>
 
               <div>
-                <label htmlFor="tipoProveedor" className="block font-semibold mb-1">
-                  Tipo de Proveedor
+                <label htmlFor="ruc" className="block font-semibold mb-1">
+                  RUC
                 </label>
-                <select
-                  id="tipoProveedor"
-                  name="tipoProveedor"
-                  value={nuevoProveedor.tipoProveedor}
+                <input
+                  type="text"
+                  id="ruc"
+                  name="ruc"
+                  value={nuevoProveedor.ruc}
                   onChange={manejarCambio}
                   className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-red-500"
-                >
-                  <option value="Local">Local</option>
-                  <option value="Internacional">Internacional</option>
-                </select>
+                  required
+                />
               </div>
 
               <div>
@@ -416,7 +414,7 @@ export default function Proveedores() {
             <th className="px-6 py-4 text-left text-sm font-semibold text-[#ca5c71] uppercase tracking-wider">Teléfono</th>
             <th className="px-6 py-4 text-left text-sm font-semibold text-[#ca5c71] uppercase tracking-wider">Correo</th>
             <th className="px-6 py-4 text-left text-sm font-semibold text-[#ca5c71] uppercase tracking-wider">Dirección</th>
-            <th className="px-6 py-4 text-left text-sm font-semibold text-[#ca5c71] uppercase tracking-wider">Tipo</th>
+            <th className="px-6 py-4 text-left text-sm font-semibold text-[#ca5c71] uppercase tracking-wider">RUC</th>
             <th className="px-6 py-4 text-left text-sm font-semibold text-[#ca5c71] uppercase tracking-wider">Estado</th>
             <th className="px-6 py-4 text-center text-sm font-semibold text-[#ca5c71] uppercase tracking-wider">Acciones</th>
           </tr>
@@ -439,7 +437,7 @@ export default function Proveedores() {
                 </a>
               </td>
               <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{p.direccion}</td>
-              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{p.tipoProveedor}</td>
+              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{p.ruc}</td>
               <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{p.estado}</td>
               <td className="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
                 <div className="flex justify-center space-x-3">
