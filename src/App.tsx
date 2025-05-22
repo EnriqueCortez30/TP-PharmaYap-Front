@@ -1,11 +1,11 @@
 import { useState } from "react";
-import { FiUsers, FiShoppingBag, FiTruck, FiSearch, FiBell, FiUser, FiGrid } from "react-icons/fi";
+import { FiUsers, FiShoppingBag, FiTruck, FiSearch, FiBell, FiUser, FiGrid, FiHome } from "react-icons/fi";
 import Producto from './Productos';
 import Categoria from './Categoria';
 
 
 export default function App() {
-  const [pagina, setPagina] = useState<"trabajadores" | "producto"| "categoria" | "proveedores" | "usuarios">("producto");
+  const [pagina, setPagina] = useState<"inicio"|"trabajadores" | "producto"| "categoria" | "proveedores" | "usuarios">("inicio");
 
   return (
     <div className="min-h-screen flex flex-col bg-white">
@@ -24,6 +24,19 @@ export default function App() {
 
               {/* Menu */}
               <nav className="hidden md:flex space-x-8">
+
+                <button
+                  onClick={() => setPagina("inicio")}
+                  className={`inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium ${
+                    pagina === "inicio"
+                      ? "border-[#ca5c71] text-[#ca5c71]"
+                      : "border-transparent text-gray-600 hover:text-[#ca5c71] hover:border-[#ca5c71]"
+                  }`}
+                >
+                  <FiHome className="mr-1" /> Inicio
+                </button>
+
+
 
                 <button
                   onClick={() => setPagina("trabajadores")}
@@ -108,15 +121,20 @@ export default function App() {
 
       {/* Contenido dinámico */}
       <main className="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+        {pagina === "inicio" && (
+          <div className="text-center text-gray-700 text-xl font-semibold">
+            Aquí irá la vista inicio del administrador (pendiente por implementar)
+          </div>
+        )}
+
         {pagina === "trabajadores" && (
           <div className="text-center text-gray-700 text-xl font-semibold">
             Aquí irá la gestión de Trabajadores (pendiente por implementar)
           </div>
         )}
 
-
         {pagina === "producto" &&  <Producto/>}
-
 
         {pagina === "categoria" && <Categoria/>}
 
@@ -125,6 +143,7 @@ export default function App() {
             Aquí irá proveedores (pendiente por implementar)
           </div>
         )}
+
 
         {pagina === "usuarios" && (
           <div className="text-center text-gray-700 text-xl font-semibold">
