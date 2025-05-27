@@ -2,6 +2,8 @@ import { useState } from "react";
 import { FiUsers, FiShoppingBag, FiTruck, FiSearch, FiBell, FiUser, FiGrid, FiHome } from "react-icons/fi";
 import Producto from './Productos';
 import Categoria from './Categoria';
+import Trabajadores from './Trabajadores';
+import Proveedores from './Proveedores';
 
 
 export default function App() {
@@ -128,21 +130,13 @@ export default function App() {
           </div>
         )}
 
-        {pagina === "trabajadores" && (
-          <div className="text-center text-gray-700 text-xl font-semibold">
-            Aquí irá la gestión de Trabajadores (pendiente por implementar)
-          </div>
-        )}
+        {pagina === "trabajadores" && <Trabajadores/>}
 
         {pagina === "producto" &&  <Producto/>}
 
         {pagina === "categoria" && <Categoria/>}
 
-        {pagina === "proveedores" && (
-          <div className="text-center text-gray-700 text-xl font-semibold">
-            Aquí irá proveedores (pendiente por implementar)
-          </div>
-        )}
+        {pagina === "proveedores" && <Proveedores/>}
 
 
         {pagina === "usuarios" && (
