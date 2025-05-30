@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, DragEvent } from "react";  
 import { FiEdit, FiTrash2, FiTruck } from "react-icons/fi";
 import { AiOutlineFileExcel, AiOutlineFilePdf } from "react-icons/ai";
 import jsPDF from "jspdf";
@@ -12,6 +12,7 @@ type Proveedor = {
   direccion: string;
   ruc: string;
   estado: string;
+  archivos: File[]; // Guardamos archivos completos
 };
 
 const proveedoresIniciales: Proveedor[] = [
@@ -23,6 +24,7 @@ const proveedoresIniciales: Proveedor[] = [
     direccion: "Av. Salud 123, Lima",
     ruc: "20123456789",
     estado: "Activo",
+    archivos: [],
   },
   {
     id: 2,
@@ -32,6 +34,7 @@ const proveedoresIniciales: Proveedor[] = [
     direccion: "Jr. Medicinas 456, Lima",
     ruc: "20456789123",
     estado: "Activo",
+    archivos: [],
   },
 ];
 
@@ -49,7 +52,10 @@ export default function Proveedores() {
     direccion: "",
     ruc: "",
     estado: "Activo",
+    archivos: [],
   });
+
+  const [archivos, setArchivos] = useState<File[]>([]);
 
   useEffect(() => {
     if (mensaje) {
@@ -70,7 +76,9 @@ export default function Proveedores() {
       direccion: "",
       ruc: "",
       estado: "Activo",
+      archivos: [],
     });
+    setArchivos([]);
     setEditId(null);
   };
 
@@ -119,9 +127,34 @@ export default function Proveedores() {
       direccion: p.direccion,
       ruc: p.ruc,
       estado: p.estado,
+      archivos: p.archivos || [],
     });
+    setArchivos(p.archivos || []);
     setEditId(p.id);
     setShowForm(true);
+  };
+
+  const manejarDrop = (e: DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    const archivosArr = Array.from(e.dataTransfer.files);
+
+    const nuevosArchivos = archivosArr.filter(
+      (archivo) => !archivos.some((a) => a.name === archivo.name && a.size === archivo.size)
+    );
+
+    const actualizados = [...archivos, ...nuevosArchivos];
+    setArchivos(actualizados);
+    setNuevoProveedor(prev => ({ ...prev, archivos: actualizados }));
+  };
+
+  const manejarDragOver = (e: DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+  };
+
+  const eliminarArchivo = (index: number) => {
+    const actualizados = archivos.filter((_, i) => i !== index);
+    setArchivos(actualizados);
+    setNuevoProveedor(prev => ({ ...prev, archivos: actualizados }));
   };
 
   function exportarCSV(proveedoresExport: Proveedor[]) {
@@ -137,6 +170,7 @@ export default function Proveedores() {
       "Dirección",
       "RUC",
       "Estado",
+      "Archivos",
     ];
 
     const filas = proveedoresExport.map((p) => [
@@ -146,6 +180,7 @@ export default function Proveedores() {
       p.direccion,
       p.ruc,
       p.estado,
+      p.archivos.map(a => a.name).join(", "),
     ]);
 
     const separador = ";";
@@ -187,7 +222,7 @@ export default function Proveedores() {
     }
     const doc = new jsPDF();
     doc.text("Lista de Proveedores", 14, 20);
-    const columnas = ["Nombre", "Teléfono", "Correo", "Dirección", "RUC", "Estado"];
+    const columnas = ["Nombre", "Teléfono", "Correo", "Dirección", "RUC", "Estado", "Archivos"];
     const filas = proveedoresFiltrados.map(p => [
       p.nombre,
       p.telefono,
@@ -195,6 +230,7 @@ export default function Proveedores() {
       p.direccion,
       p.ruc,
       p.estado,
+      p.archivos.map(a => a.name).join(", "),
     ]);
     autoTable(doc, {
       startY: 30,
@@ -276,7 +312,7 @@ export default function Proveedores() {
             onClick={() => setShowForm(false)}
             aria-hidden="true"
           />
-          <div className="relative bg-white p-6 rounded-xl shadow-xl w-full max-w-md mx-4">
+          <div className="relative bg-white p-6 rounded-xl shadow-xl w-full max-w-md mx-4 max-h-[90vh] overflow-y-auto">
             <button
               className="absolute top-4 right-4 w-8 h-8 rounded-full bg-gray-200 text-gray-600 flex items-center justify-center hover:bg-gray-300 transition"
               onClick={() => setShowForm(false)}
@@ -403,10 +439,73 @@ export default function Proveedores() {
                 </button>
               </div>
             </form>
+
+            {/* Drag & Drop area */}
+            <div
+              onDrop={manejarDrop}
+              onDragOver={manejarDragOver}
+              className="mt-8 p-6 border-2 border-dashed border-[#ca5c71] rounded-lg text-center cursor-pointer hover:bg-[#fce9eb] transition-colors"
+            >
+              <p className="text-[#ca5c71] font-semibold mb-1">Arrastra y suelta archivos aquí</p>
+              <p className="text-gray-600 text-sm">o selecciónalos desde tu explorador</p>
+              <input
+                type="file"
+                multiple
+                className="hidden"
+                id="fileInput"
+                onChange={(e) => {
+                  if (!e.target.files) return;
+                  const nuevos = Array.from(e.target.files);
+                  const actualizados = [...archivos, ...nuevos];
+                  setArchivos(actualizados);
+                  setNuevoProveedor(prev => ({ ...prev, archivos: actualizados }));
+                }}
+              />
+              <label
+                htmlFor="fileInput"
+                className="mt-2 inline-block bg-[#ca5c71] text-white px-4 py-2 rounded cursor-pointer hover:bg-[#a6535c]"
+              >
+                Seleccionar archivos
+              </label>
+            </div>
+
+            {/* Tabla archivos en modal */}
+            {archivos.length > 0 && (
+              <table className="w-full mt-6 text-left border border-gray-300 rounded-lg overflow-hidden">
+                <thead className="bg-[#f8e1e5]">
+                  <tr>
+                    <th className="px-4 py-2 text-sm font-semibold text-[#ca5c71]">Nombre</th>
+                    <th className="px-4 py-2 text-sm font-semibold text-[#ca5c71]">Tipo</th>
+                    <th className="px-4 py-2 text-sm font-semibold text-[#ca5c71] text-center">Acciones</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {archivos.map((archivo, index) => (
+                    <tr
+                      key={index}
+                      className="border-t border-gray-300 hover:bg-[#fce9eb] transition-colors"
+                    >
+                      <td className="px-4 py-2 text-sm">{archivo.name}</td>
+                      <td className="px-4 py-2 text-sm">{archivo.type || "Desconocido"}</td>
+                      <td className="px-4 py-2 text-sm text-center">
+                        <button
+                          onClick={() => eliminarArchivo(index)}
+                          className="text-red-600 hover:text-red-800 font-semibold"
+                          title="Eliminar archivo"
+                        >
+                          &times;
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
           </div>
         </div>
       )}
 
+      {/* Tabla principal */}
       <table className="min-w-full divide-y divide-gray-200 bg-white rounded-xl shadow-lg overflow-hidden">
         <thead className="bg-[#f8e1e5]">
           <tr>
@@ -416,13 +515,14 @@ export default function Proveedores() {
             <th className="px-6 py-4 text-left text-sm font-semibold text-[#ca5c71] uppercase tracking-wider">Dirección</th>
             <th className="px-6 py-4 text-left text-sm font-semibold text-[#ca5c71] uppercase tracking-wider">RUC</th>
             <th className="px-6 py-4 text-left text-sm font-semibold text-[#ca5c71] uppercase tracking-wider">Estado</th>
+            <th className="px-6 py-4 text-left text-sm font-semibold text-[#ca5c71] uppercase tracking-wider">Archivos</th>
             <th className="px-6 py-4 text-center text-sm font-semibold text-[#ca5c71] uppercase tracking-wider">Acciones</th>
           </tr>
         </thead>
         <tbody className="divide-y divide-gray-200">
           {proveedoresFiltrados.length === 0 && (
             <tr>
-              <td colSpan={7} className="text-center py-6 text-gray-500">
+              <td colSpan={8} className="text-center py-6 text-gray-500">
                 No se encontraron proveedores
               </td>
             </tr>
@@ -439,6 +539,25 @@ export default function Proveedores() {
               <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{p.direccion}</td>
               <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{p.ruc}</td>
               <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{p.estado}</td>
+              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+                {p.archivos && p.archivos.length > 0
+                  ? p.archivos.map((archivo, index) => {
+                      const url = URL.createObjectURL(archivo);
+                      return (
+                        <a
+                          key={index}
+                          href={url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-blue-600 hover:underline mr-2"
+                          onClick={() => setTimeout(() => URL.revokeObjectURL(url), 10000)}
+                        >
+                          {archivo.name}
+                        </a>
+                      );
+                    })
+                  : "—"}
+              </td>
               <td className="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
                 <div className="flex justify-center space-x-3">
                   <button
