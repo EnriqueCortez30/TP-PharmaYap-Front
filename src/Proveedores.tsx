@@ -1,4 +1,4 @@
-import React, { useState, useEffect, DragEvent } from "react";  
+import React, { useState, useEffect } from "react";
 import { FiEdit, FiTrash2, FiTruck } from "react-icons/fi";
 import { AiOutlineFileExcel, AiOutlineFilePdf } from "react-icons/ai";
 import jsPDF from "jspdf";
@@ -44,6 +44,7 @@ export default function Proveedores() {
   const [search, setSearch] = useState("");
   const [editId, setEditId] = useState<number | null>(null);
   const [mensaje, setMensaje] = useState<string | null>(null);
+  const [dragActive, setDragActive] = useState(false);
 
   const [nuevoProveedor, setNuevoProveedor] = useState<Omit<Proveedor, "id">>({
     nombre: "",
@@ -55,8 +56,6 @@ export default function Proveedores() {
     archivos: [],
   });
 
-  const [archivos, setArchivos] = useState<File[]>([]);
-
   useEffect(() => {
     if (mensaje) {
       const timer = setTimeout(() => setMensaje(null), 3000);
@@ -64,7 +63,9 @@ export default function Proveedores() {
     }
   }, [mensaje]);
 
-  const manejarCambio = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const manejarCambio = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
     setNuevoProveedor({ ...nuevoProveedor, [e.target.name]: e.target.value });
   };
 
@@ -248,6 +249,46 @@ export default function Proveedores() {
     p.ruc.includes(search)
   );
 
+  // --- Funciones Drag & Drop ---
+
+  const handleDrag = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (e.type === "dragenter" || e.type === "dragover") {
+      setDragActive(true);
+    } else if (e.type === "dragleave") {
+      setDragActive(false);
+    }
+  };
+
+  const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragActive(false);
+    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+      procesarArchivo(e.dataTransfer.files[0]);
+    }
+  };
+
+  const handleChangeFile = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      procesarArchivo(e.target.files[0]);
+    }
+  };
+
+  const procesarArchivo = (file: File) => {
+    if (file.type !== "application/pdf") {
+      alert("Solo se permiten archivos PDF");
+      return;
+    }
+    // Aquí puedes hacer lo que necesites con el archivo PDF, ejemplo: subirlo a un servidor
+    setMensaje(`Archivo "${file.name}" cargado correctamente.`);
+  };
+
+  const abrirSelectorArchivo = () => {
+    inputFileRef.current?.click();
+  };
+
   return (
     <div>
       <h1 className="text-3xl font-bold mb-6 flex items-center text-gray-800">
@@ -270,7 +311,7 @@ export default function Proveedores() {
           className="border border-gray-300 rounded px-4 py-2 max-w-sm w-full"
         />
 
-        <div className="flex space-x-4">
+        <div className="flex space-x-4 flex-wrap">
           <button
             onClick={() => exportarCSV(proveedoresFiltrados)}
             className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors shadow-md flex items-center"
@@ -295,12 +336,36 @@ export default function Proveedores() {
             className="bg-[#ca5c71] text-white px-4 py-2 rounded-lg hover:bg-pink-700 transition-colors shadow-md flex items-center"
           >
             <FiTruck className="mr-2" />
-            Agregar Proveedor
+            Nuevo Proveedor
           </button>
         </div>
       </div>
 
-      {/* Modal */}
+      {/* Zona Drag & Drop */}
+      <div
+        onDragEnter={handleDrag}
+        onDragOver={handleDrag}
+        onDragLeave={handleDrag}
+        onDrop={handleDrop}
+        className={`border-2 border-dashed rounded-md p-6 text-center cursor-pointer mb-6
+          ${dragActive ? "border-pink-600 bg-pink-50" : "border-gray-300 bg-white"}
+        `}
+        onClick={abrirSelectorArchivo}
+        aria-label="Zona para subir archivo PDF"
+      >
+        <FiUpload className="mx-auto mb-2" style={{ fontSize: "2rem", color: "#ca5c71" }} />
+        <p className="text-gray-600">
+          Arrastra y suelta un archivo PDF aquí o haz clic para seleccionar.
+        </p>
+        <input
+          ref={inputFileRef}
+          type="file"
+          accept="application/pdf"
+          className="hidden"
+          onChange={handleChangeFile}
+        />
+      </div>
+
       {showForm && (
         <div
           className="fixed inset-0 flex justify-center items-center z-50"
@@ -312,17 +377,16 @@ export default function Proveedores() {
             onClick={() => setShowForm(false)}
             aria-hidden="true"
           />
-          <div className="relative bg-white p-6 rounded-xl shadow-xl w-full max-w-md mx-4 max-h-[90vh] overflow-y-auto">
+          <div className="relative bg-white p-6 rounded-xl shadow-xl w-full max-w-md mx-4">
             <button
-              className="absolute top-4 right-4 w-8 h-8 rounded-full bg-gray-200 text-gray-600 flex items-center justify-center hover:bg-gray-300 transition"
               onClick={() => setShowForm(false)}
+              className="absolute top-3 right-3 text-gray-600 hover:text-gray-900 text-xl font-bold"
               aria-label="Cerrar formulario"
             >
-              &times;
+              ×
             </button>
-
-            <h2 className="text-3xl font-bold mb-6" style={{ color: "#ca5c71" }}>
-              {editId !== null ? "Editar Proveedor" : "Agregar Proveedor"}
+            <h2 className="text-2xl font-semibold mb-4 text-center text-gray-700">
+              {editId ? "Editar Proveedor" : "Agregar Proveedor"}
             </h2>
 
             <form
@@ -330,112 +394,80 @@ export default function Proveedores() {
                 e.preventDefault();
                 agregarProveedor();
               }}
-              className="space-y-6"
+              className="space-y-4"
             >
-              <div>
-                <label htmlFor="nombre" className="block font-semibold mb-1">
-                  Nombre
-                </label>
-                <input
-                  type="text"
-                  id="nombre"
-                  name="nombre"
-                  value={nuevoProveedor.nombre}
-                  onChange={manejarCambio}
-                  className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-red-500"
-                  required
-                />
-              </div>
+              <input
+                name="nombre"
+                type="text"
+                value={nuevoProveedor.nombre}
+                onChange={manejarCambio}
+                placeholder="Nombre del proveedor"
+                className="border border-gray-300 rounded px-3 py-2 w-full"
+                required
+              />
+              <input
+                name="telefono"
+                type="text"
+                value={nuevoProveedor.telefono}
+                onChange={manejarCambio}
+                placeholder="Teléfono"
+                className="border border-gray-300 rounded px-3 py-2 w-full"
+                required
+              />
+              <input
+                name="correo"
+                type="email"
+                value={nuevoProveedor.correo}
+                onChange={manejarCambio}
+                placeholder="Correo electrónico"
+                className="border border-gray-300 rounded px-3 py-2 w-full"
+                required
+              />
+              <input
+                name="direccion"
+                type="text"
+                value={nuevoProveedor.direccion}
+                onChange={manejarCambio}
+                placeholder="Dirección"
+                className="border border-gray-300 rounded px-3 py-2 w-full"
+                required
+              />
+              <input
+                name="ruc"
+                type="text"
+                value={nuevoProveedor.ruc}
+                onChange={manejarCambio}
+                placeholder="RUC"
+                className="border border-gray-300 rounded px-3 py-2 w-full"
+                required
+              />
+              <select
+                name="estado"
+                value={nuevoProveedor.estado}
+                onChange={manejarCambio}
+                className="border border-gray-300 rounded px-3 py-2 w-full"
+                required
+              >
+                <option value="Activo">Activo</option>
+                <option value="Inactivo">Inactivo</option>
+              </select>
 
-              <div>
-                <label htmlFor="telefono" className="block font-semibold mb-1">
-                  Teléfono
-                </label>
-                <input
-                  type="text"
-                  id="telefono"
-                  name="telefono"
-                  value={nuevoProveedor.telefono}
-                  onChange={manejarCambio}
-                  className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-red-500"
-                  required
-                />
-              </div>
-
-              <div>
-                <label htmlFor="correo" className="block font-semibold mb-1">
-                  Correo
-                </label>
-                <input
-                  type="email"
-                  id="correo"
-                  name="correo"
-                  value={nuevoProveedor.correo}
-                  onChange={manejarCambio}
-                  className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-red-500"
-                  required
-                />
-              </div>
-
-              <div>
-                <label htmlFor="direccion" className="block font-semibold mb-1">
-                  Dirección
-                </label>
-                <input
-                  type="text"
-                  id="direccion"
-                  name="direccion"
-                  value={nuevoProveedor.direccion}
-                  onChange={manejarCambio}
-                  className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-red-500"
-                  required
-                />
-              </div>
-
-              <div>
-                <label htmlFor="ruc" className="block font-semibold mb-1">
-                  RUC
-                </label>
-                <input
-                  type="text"
-                  id="ruc"
-                  name="ruc"
-                  value={nuevoProveedor.ruc}
-                  onChange={manejarCambio}
-                  className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-red-500"
-                  required
-                />
-              </div>
-
-              <div>
-                <label htmlFor="estado" className="block font-semibold mb-1">
-                  Estado
-                </label>
-                <select
-                  id="estado"
-                  name="estado"
-                  value={nuevoProveedor.estado}
-                  onChange={manejarCambio}
-                  className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-red-500"
-                >
-                  <option value="Activo">Activo</option>
-                  <option value="Inactivo">Inactivo</option>
-                </select>
-              </div>
-
-              <div className="flex justify-end space-x-4">
+              <div className="flex justify-end space-x-2">
                 <button
                   type="button"
-                  onClick={() => setShowForm(false)}
-                  className="px-6 py-3 rounded-full border border-[#ca5c71] text-[#ca5c71] font-semibold hover:bg-[#ca5c71] hover:text-white transition"
+                  onClick={() => {
+                    limpiarFormulario();
+                    setShowForm(false);
+                  }}
+                  className="px-4 py-2 rounded bg-gray-200 hover:bg-gray-300 transition-colors"
                 >
                   Cancelar
                 </button>
                 <button
                   type="submit"
-                  className="px-6 py-3 rounded-full bg-[#ca5c71] text-white font-semibold hover:bg-[#a6535c] transition"
+                  className="px-4 py-2 rounded bg-[#ca5c71] text-white hover:bg-pink-700 transition-colors"
                 >
-                  {editId !== null ? "Actualizar" : "Agregar"}
+                  {editId ? "Guardar Cambios" : "Agregar"}
                 </button>
               </div>
             </form>
@@ -505,7 +537,6 @@ export default function Proveedores() {
         </div>
       )}
 
-      {/* Tabla principal */}
       <table className="min-w-full divide-y divide-gray-200 bg-white rounded-xl shadow-lg overflow-hidden">
         <thead className="bg-[#f8e1e5]">
           <tr>
@@ -515,14 +546,13 @@ export default function Proveedores() {
             <th className="px-6 py-4 text-left text-sm font-semibold text-[#ca5c71] uppercase tracking-wider">Dirección</th>
             <th className="px-6 py-4 text-left text-sm font-semibold text-[#ca5c71] uppercase tracking-wider">RUC</th>
             <th className="px-6 py-4 text-left text-sm font-semibold text-[#ca5c71] uppercase tracking-wider">Estado</th>
-            <th className="px-6 py-4 text-left text-sm font-semibold text-[#ca5c71] uppercase tracking-wider">Archivos</th>
             <th className="px-6 py-4 text-center text-sm font-semibold text-[#ca5c71] uppercase tracking-wider">Acciones</th>
           </tr>
         </thead>
         <tbody className="divide-y divide-gray-200">
           {proveedoresFiltrados.length === 0 && (
             <tr>
-              <td colSpan={8} className="text-center py-6 text-gray-500">
+              <td colSpan={7} className="text-center py-6 text-gray-500">
                 No se encontraron proveedores
               </td>
             </tr>
@@ -539,25 +569,6 @@ export default function Proveedores() {
               <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{p.direccion}</td>
               <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{p.ruc}</td>
               <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{p.estado}</td>
-              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                {p.archivos && p.archivos.length > 0
-                  ? p.archivos.map((archivo, index) => {
-                      const url = URL.createObjectURL(archivo);
-                      return (
-                        <a
-                          key={index}
-                          href={url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-blue-600 hover:underline mr-2"
-                          onClick={() => setTimeout(() => URL.revokeObjectURL(url), 10000)}
-                        >
-                          {archivo.name}
-                        </a>
-                      );
-                    })
-                  : "—"}
-              </td>
               <td className="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
                 <div className="flex justify-center space-x-3">
                   <button
