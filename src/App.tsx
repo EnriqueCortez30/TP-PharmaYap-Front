@@ -4,10 +4,11 @@ import Producto from './Productos';
 import Categoria from './Categoria';
 import Trabajadores from './Trabajadores';
 import Proveedores from './Proveedores';
+import Clientes from "./Clientes";
 
 
 export default function App() {
-  const [pagina, setPagina] = useState<"inicio"|"trabajadores" | "producto"| "categoria" | "proveedores" | "usuarios">("inicio");
+  const [pagina, setPagina] = useState<"inicio"|"trabajadores" | "producto"| "categoria" | "proveedores" | "clientes">("inicio");
 
   return (
     <div className="min-h-screen flex flex-col bg-white">
@@ -89,9 +90,9 @@ export default function App() {
 
 
                 <button
-                  onClick={() => setPagina("usuarios")}
+                  onClick={() => setPagina("clientes")}
                   className={`inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium ${
-                    pagina === "usuarios"
+                    pagina === "clientes"
                       ? "border-[#ca5c71] text-[#ca5c71]"
                       : "border-transparent text-gray-600 hover:text-[#ca5c71] hover:border-[#ca5c71]"
                   }`}
@@ -138,12 +139,8 @@ export default function App() {
 
         {pagina === "proveedores" && <Proveedores/>}
 
+        {pagina === "clientes" && < Clientes />}
 
-        {pagina === "usuarios" && (
-          <div className="text-center text-gray-700 text-xl font-semibold">
-            Aquí irá usuarios (pendiente por implementar)
-          </div>
-        )}
       </main>
 
       {/* Footer */}
