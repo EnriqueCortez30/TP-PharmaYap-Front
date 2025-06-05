@@ -64,39 +64,70 @@ function Clientes() {
     const { name, value } = e.target
     setNuevoCliente(prev => ({ ...prev, [name]: value }))
   }
+const validarCliente = (cliente) => {
+  const errores = []
 
-  const handleAgregarCliente = () => {
-    const nuevoId = clientes.length > 0 ? Math.max(...clientes.map(c => c.id_usuario)) + 1 : 1
-    setClientes(prev => [...prev, { ...nuevoCliente, id_usuario: nuevoId }])
-    setNuevoCliente({
-      nombre: '',
-      apellido: '',
-      correo_electronico: '',
-      contrasena: '',
-      dni: '',
-      teléfono: '',
-      dirección: '',
-      fecha_nacimiento: '',
-      género: 'Masculino',
-      fecha_registro: new Date().toISOString().slice(0, 10),
-      estado_cuenta: 'Activo',
-    })
-    setShowModal(false)
-    toast.success('Cliente agregado con éxito 🎉')
+  // Validación de correo
+  if (!cliente.correo_electronico.includes('@')) {
+    errores.push('El correo debe contener "@"')
   }
+
+  // Validación de DNI (solo números)
+  if (!/^\d+$/.test(cliente.dni)) {
+    errores.push('El DNI debe contener solo números')
+  }
+
+  // Validación de teléfono (solo números)
+  if (!/^\d+$/.test(cliente.teléfono)) {
+    errores.push('El teléfono debe contener solo números')
+  }
+
+  if (errores.length > 0) {
+    toast.error(errores.join('\n'))
+    return false
+  }
+
+  return true
+}
+
+ const handleAgregarCliente = () => {
+  if (!validarCliente(nuevoCliente)) return
+
+  const nuevoId = clientes.length > 0 ? Math.max(...clientes.map(c => c.id_usuario)) + 1 : 1
+  setClientes(prev => [...prev, { ...nuevoCliente, id_usuario: nuevoId }])
+  setNuevoCliente({
+    nombre: '',
+    apellido: '',
+    correo_electronico: '',
+    contrasena: '',
+    dni: '',
+    teléfono: '',
+    dirección: '',
+    fecha_nacimiento: '',
+    género: 'Masculino',
+    fecha_registro: new Date().toISOString().slice(0, 10),
+    estado_cuenta: 'Activo',
+  })
+  setShowModal(false)
+  toast.success('Cliente agregado con éxito 🎉')
+}
+
 
   const handleEditChange = (e) => {
     const { name, value } = e.target
     setEditCliente(prev => ({ ...prev, [name]: value }))
   }
 
-  const handleSaveEdit = () => {
-    setClientes(prev =>
-      prev.map(c => (c.id_usuario === editCliente.id_usuario ? editCliente : c))
-    )
-    setEditCliente(null)
-    toast.success('Cliente actualizado correctamente ✨')
-  }
+ const handleSaveEdit = () => {
+  if (!validarCliente(editCliente)) return
+
+  setClientes(prev =>
+    prev.map(c => (c.id_usuario === editCliente.id_usuario ? editCliente : c))
+  )
+  setEditCliente(null)
+  toast.success('Cliente actualizado correctamente ✨')
+}
+
 
   const toggleEstado = (id_usuario) => {
     setClientes(prev =>
