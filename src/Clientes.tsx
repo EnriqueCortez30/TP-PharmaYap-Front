@@ -55,79 +55,78 @@ function Clientes() {
   const [deleteCliente, setDeleteCliente] = useState(null)
 
   const rolesChartData = [
-    { género: 'Femenino', cantidad: clientes.filter(c => c['género'] === 'Femenino').length },
-    { género: 'Masculino', cantidad: clientes.filter(c => c['género'] === 'Masculino').length },
-    { género: 'Otro', cantidad: clientes.filter(c => c['género'] === 'Otro').length },
+    { género: 'Femenino', cantidad: clientes.filter(c => c.género === 'Femenino').length },
+    { género: 'Masculino', cantidad: clientes.filter(c => c.género === 'Masculino').length },
+    { género: 'Otro', cantidad: clientes.filter(c => c.género === 'Otro').length },
   ]
 
   const handleNuevoClienteChange = (e) => {
     const { name, value } = e.target
     setNuevoCliente(prev => ({ ...prev, [name]: value }))
   }
-const validarCliente = (cliente) => {
-  const errores = []
 
-  // Validación de correo
-  if (!cliente.correo_electronico.includes('@')) {
-    errores.push('El correo debe contener "@"')
+  const validarCliente = (cliente) => {
+    const errores = []
+
+    // Validación de correo
+    if (!cliente.correo_electronico.includes('@')) {
+      errores.push('El correo debe contener "@"')
+    }
+
+    // Validación de DNI (solo números)
+    if (!/^\d+$/.test(cliente.dni)) {
+      errores.push('El DNI debe contener solo números')
+    }
+
+    // Validación de teléfono (solo números)
+    if (!/^\d+$/.test(cliente.teléfono)) {
+      errores.push('El teléfono debe contener solo números')
+    }
+
+    if (errores.length > 0) {
+      toast.error(errores.join('\n'))
+      return false
+    }
+
+    return true
   }
 
-  // Validación de DNI (solo números)
-  if (!/^\d+$/.test(cliente.dni)) {
-    errores.push('El DNI debe contener solo números')
+  const handleAgregarCliente = () => {
+    if (!validarCliente(nuevoCliente)) return
+
+    const nuevoId = clientes.length > 0 ? Math.max(...clientes.map(c => c.id_usuario)) + 1 : 1
+    setClientes(prev => [...prev, { ...nuevoCliente, id_usuario: nuevoId }])
+    setNuevoCliente({
+      nombre: '',
+      apellido: '',
+      correo_electronico: '',
+      contrasena: '',
+      dni: '',
+      teléfono: '',
+      dirección: '',
+      fecha_nacimiento: '',
+      género: 'Masculino',
+      fecha_registro: new Date().toISOString().slice(0, 10),
+      estado_cuenta: 'Activo',
+    })
+    setShowModal(false)
+    toast.success('Cliente agregado con éxito 🎉')
   }
-
-  // Validación de teléfono (solo números)
-  if (!/^\d+$/.test(cliente.teléfono)) {
-    errores.push('El teléfono debe contener solo números')
-  }
-
-  if (errores.length > 0) {
-    toast.error(errores.join('\n'))
-    return false
-  }
-
-  return true
-}
-
- const handleAgregarCliente = () => {
-  if (!validarCliente(nuevoCliente)) return
-
-  const nuevoId = clientes.length > 0 ? Math.max(...clientes.map(c => c.id_usuario)) + 1 : 1
-  setClientes(prev => [...prev, { ...nuevoCliente, id_usuario: nuevoId }])
-  setNuevoCliente({
-    nombre: '',
-    apellido: '',
-    correo_electronico: '',
-    contrasena: '',
-    dni: '',
-    teléfono: '',
-    dirección: '',
-    fecha_nacimiento: '',
-    género: 'Masculino',
-    fecha_registro: new Date().toISOString().slice(0, 10),
-    estado_cuenta: 'Activo',
-  })
-  setShowModal(false)
-  toast.success('Cliente agregado con éxito 🎉')
-}
-
 
   const handleEditChange = (e) => {
     const { name, value } = e.target
     setEditCliente(prev => ({ ...prev, [name]: value }))
   }
 
- const handleSaveEdit = () => {
-  if (!validarCliente(editCliente)) return
+  const handleSaveEdit = () => {
+    if (!validarCliente(editCliente)) return
 
-  setClientes(prev =>
-    prev.map(c => (c.id_usuario === editCliente.id_usuario ? editCliente : c))
-  )
-  setEditCliente(null)
-  toast.success('Cliente actualizado correctamente ✨')
-}
-
+    setClientes(prev =>
+      prev.map(c => (c.id_usuario === editCliente.id_usuario ? editCliente : c))
+    )
+    setEditCliente(null)
+    toast.success('Cliente actualizado correctamente ✨')
+  }
 
   const toggleEstado = (id_usuario) => {
     setClientes(prev =>
@@ -171,7 +170,10 @@ const validarCliente = (cliente) => {
                   'Nombre', 'Apellido', 'Correo Electrónico', 'DNI', 'Teléfono',
                   'Dirección', 'Fecha Nacimiento', 'Género', 'Fecha Registro', 'Acciones'
                 ].map(header => (
-                  <th key={header} className="px-4 py-3 text-left text-sm font-semibold text-[#ca5c71] uppercase">
+                  <th
+                    key={header}
+                    className="px-4 py-3 text-left text-sm font-semibold text-[#ca5c71] uppercase"
+                  >
                     {header}
                   </th>
                 ))}
@@ -179,7 +181,7 @@ const validarCliente = (cliente) => {
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
               {clientes.map((cliente) => {
-                const isActive = cliente.estado_cuenta === 'Activo';
+                const isActive = cliente.estado_cuenta === 'Activo'
                 return (
                   <tr
                     key={cliente.id_usuario}
@@ -209,240 +211,323 @@ const validarCliente = (cliente) => {
                             checked={isActive}
                             onChange={() => toggleEstado(cliente.id_usuario)}
                           />
-                          <div className="w-11 h-6 bg-gray-300 peer-focus:outline-none rounded-full peer peer-checked:bg-[#ca5c71] relative transition-all">
-                            <div className="absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full transition-transform peer-checked:translate-x-full" />
-                          </div>
+                          <div className="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:bg-pink-700 relative transition-colors"></div>
                         </label>
 
-                        <div className={!isActive ? 'pointer-events-none' : ''}>
-                          <button onClick={() => setEditCliente(cliente)} className="mr-2 text-gray-600 hover:text-[#ca5c71]">
-                            <FiEdit />
-                          </button>
-                          <button onClick={() => setDeleteCliente(cliente)} className="text-gray-600 hover:text-red-500">
-                            <FiTrash2 />
-                          </button>
-                        </div>
+                        <button
+                          onClick={() => setEditCliente(cliente)}
+                          title="Editar Cliente"
+                          className="text-[#ca5c71] hover:text-pink-700"
+                        >
+                          <FiEdit />
+                        </button>
+                        <button
+                          onClick={() => setDeleteCliente(cliente)}
+                          title="Eliminar Cliente"
+                          className="text-[#ca5c71] hover:text-pink-700"
+                        >
+                          <FiTrash2 />
+                        </button>
                       </div>
                     </td>
                   </tr>
-                );
+                )
               })}
             </tbody>
           </table>
-
-          <div className="bg-gray-50 px-6 py-3 flex justify-between items-center text-sm text-gray-500">
-            <span>Mostrando {clientes.length} de {clientes.length} registros</span>
-            <div className="flex space-x-4">
-            </div>
-          </div>
         </div>
 
-        <div className="bg-white rounded-xl shadow-lg p-6">
-          <h2 className="text-xl font-semibold text-gray-800 mb-4">Distribución de Generos</h2>
-          <ResponsiveContainer width="100%" height={250}>
-            <BarChart data={rolesChartData}>
+        {/* Gráfico de barras */}
+        <div className="w-full h-64 bg-white rounded-lg shadow-lg p-4 mb-10">
+          <h2 className="text-xl font-semibold mb-4 text-gray-700">Cantidad de clientes por género</h2>
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart data={rolesChartData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
               <XAxis dataKey="género" stroke="#ca5c71" />
               <YAxis />
               <Tooltip />
-              <Bar dataKey="cantidad" fill="#ca5c71" barSize={40} />
+              <Bar dataKey="cantidad" fill="#ca5c71" radius={[5, 5, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </div>
+      </main>
 
-        {/* Modal Agregar Cliente */}
-        {showModal && (
-          <div className="fixed inset-0 backdrop-blur-sm flex items-center justify-center z-50">
-            <div className="bg-white p-6 rounded-xl shadow-xl w-full max-w-md relative">
-              <h2 className="text-xl font-bold mb-4 text-[#ca5c71]">Agregar Nuevo Cliente</h2>
-              <form onSubmit={e => { e.preventDefault(); handleAgregarCliente(); }}>
-                {[
-                  ['nombre', 'Nombre'],
-                  ['apellido', 'Apellido'],
-                  ['correo_electronico', 'Correo Electrónico'],
-                  ['contrasena', 'Contraseña'],
-                  ['dni', 'DNI'],
-                  ['teléfono', 'Teléfono'],
-                  ['dirección', 'Dirección'],
-                  ['fecha_nacimiento', 'Fecha de Nacimiento'],
-                ].map(([key, label]) => (
-                  <div key={key} className="mb-3">
-                    <label className="block text-sm font-medium text-gray-700">{label}</label>
-                    <input
-                      type={key === 'fecha_nacimiento' ? 'date' : 'text'}
-                      name={key}
-                      value={nuevoCliente[key]}
-                      onChange={handleNuevoClienteChange}
-                      className="w-full border border-gray-300 rounded-md p-2"
-                      required
-                    />
-                  </div>
-                ))}
+      {/* Modal para agregar cliente */}
+      {showModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+          <div className="bg-white rounded-lg w-full max-w-3xl p-6 relative">
+            <h2 className="text-2xl font-bold mb-4 text-[#ca5c71]">Agregar Nuevo Cliente</h2>
 
-                <div className="mb-3">
-                  <label className="block text-sm font-medium text-gray-700">Género</label>
-                  <select
-                    name="género"
-                    value={nuevoCliente.género}
-                    onChange={handleNuevoClienteChange}
-                    className="w-full border border-gray-300 rounded-md p-2"
-                  >
-                    <option value="Masculino">Masculino</option>
-                    <option value="Femenino">Femenino</option>
-                    <option value="Otro">Otro</option>
-                  </select>
-                </div>
-
-                <div className="flex justify-end space-x-3">
-                  <button
-                    type="button"
-                    onClick={() => setShowModal(false)}
-                    className="px-4 py-2 rounded-md border border-gray-300"
-                  >
-                    Cancelar
-                  </button>
-                  <button
-                    type="submit"
-                    className="bg-[#ca5c71] text-white px-4 py-2 rounded-md hover:bg-pink-700 transition-colors"
-                  >
-                    Agregar
-                  </button>
-                </div>
-              </form>
-
-              <button
-                onClick={() => setShowModal(false)}
-                className="absolute
- top-2 right-2 text-gray-500 hover:text-[#ca5c71] text-lg"
-      >
-        ✕
-      </button>
-    </div>
-  </div>
-)}
-
-        {editCliente && (
-          <div className="fixed inset-0 backdrop-blur-sm flex items-center justify-center z-50">
-            <div className="bg-white p-6 rounded-xl shadow-xl w-full max-w-md relative">
-              <h2 className="text-xl font-bold mb-4 text-[#ca5c71]">Editar Cliente</h2>
-           <form onSubmit={e => { e.preventDefault(); handleSaveEdit(); }}>
-  {[
-    ['nombre', 'Nombre'],
-    ['apellido', 'Apellido'],
-    ['correo_electronico', 'Correo Electrónico'],
-    ['contrasena', 'Contraseña'],
-    ['dni', 'DNI'],
-    ['teléfono', 'Teléfono'],
-    ['dirección', 'Dirección'],
-    ['fecha_nacimiento', 'Fecha de Nacimiento']
-  ].map(([key, label]) => (
-    <div key={key} className="mb-3">
-      <label className="block text-sm font-medium text-gray-700">{label}</label>
-      <input
-        type="text"
-        name={key}
-        value={editCliente[key]}
-        onChange={handleEditChange}
-        className="w-full border border-gray-300 rounded-md p-2"
-        required
-      />
-    </div>
-  ))}
-
-  <div className="mb-3">
-    <label className="block text-sm font-medium text-gray-700">Género</label>
-    <select
-      name="género"
-      value={editCliente.género}
-      onChange={handleEditChange}
-      className="w-full border border-gray-300 rounded-md p-2"
-    >
-      <option value="Masculino">Masculino</option>
-      <option value="Femenino">Femenino</option>
-      <option value="Otro">Otro</option>
-    </select>
-  </div>
-
-  <div className="mb-3">
-    <label className="block text-sm font-medium text-gray-700">Estado de Cuenta</label>
-   <label className="inline-flex items-center cursor-pointer mt-2">
-  <input
-    type="checkbox"
-    name="estado_cuenta"
-    className="sr-only peer"
-    checked={editCliente.estado_cuenta === 'Activo'}
-    onChange={() =>
-      setEditCliente({
-        ...editCliente,
-        estado_cuenta: editCliente.estado_cuenta === 'Activo' ? 'Inactivo' : 'Activo'
-      })
-    }
-  />
-  <div className="w-11 h-6 bg-gray-300 rounded-full relative peer-checked:bg-[#ca5c71] transition-colors duration-300">
-    <div
-      className="
-        absolute top-0.5 left-0.5
-        w-5 h-5 bg-white rounded-full
-        transition-all duration-300
-        peer-checked:left-[1.625rem]
-      "
-    />
-  </div>
-  <span className="ml-3 text-sm">{editCliente.estado_cuenta}</span>
-</label>
-
-
-  </div>
-
-  <button type="submit" className="bg-[#ca5c71] text-white px-4 py-2 rounded-lg hover:bg-pink-700">
-    Guardar Cambios
-  </button>
-</form>
-
-
-
-              <button
-                onClick={() => setEditCliente(null)}
-                className="absolute top-2 right-2 text-gray-500 hover:text-[#ca5c71] text-lg"
+            <form
+              onSubmit={e => {
+                e.preventDefault()
+                handleAgregarCliente()
+              }}
+              className="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-[80vh] overflow-y-auto"
+            >
+              <input
+                name="nombre"
+                type="text"
+                placeholder="Nombre"
+                value={nuevoCliente.nombre}
+                onChange={handleNuevoClienteChange}
+                required
+                className="border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-pink-500"
+              />
+              <input
+                name="apellido"
+                type="text"
+                placeholder="Apellido"
+                value={nuevoCliente.apellido}
+                onChange={handleNuevoClienteChange}
+                required
+                className="border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-pink-500"
+              />
+              <input
+                name="correo_electronico"
+                type="email"
+                placeholder="Correo electrónico"
+                value={nuevoCliente.correo_electronico}
+                onChange={handleNuevoClienteChange}
+                required
+                className="border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-pink-500"
+              />
+              <input
+                name="contrasena"
+                type="password"
+                placeholder="Contraseña"
+                value={nuevoCliente.contrasena}
+                onChange={handleNuevoClienteChange}
+                required
+                className="border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-pink-500"
+              />
+              <input
+                name="dni"
+                type="text"
+                placeholder="DNI"
+                value={nuevoCliente.dni}
+                onChange={handleNuevoClienteChange}
+                required
+                className="border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-pink-500"
+              />
+              <input
+                name="teléfono"
+                type="text"
+                placeholder="Teléfono"
+                value={nuevoCliente.teléfono}
+                onChange={handleNuevoClienteChange}
+                required
+                className="border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-pink-500"
+              />
+              <input
+                name="dirección"
+                type="text"
+                placeholder="Dirección"
+                value={nuevoCliente.dirección}
+                onChange={handleNuevoClienteChange}
+                className="border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-pink-500"
+              />
+              <input
+                name="fecha_nacimiento"
+                type="date"
+                placeholder="Fecha de nacimiento"
+                value={nuevoCliente.fecha_nacimiento}
+                onChange={handleNuevoClienteChange}
+                required
+                className="border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-pink-500"
+              />
+              <select
+                name="género"
+                value={nuevoCliente.género}
+                onChange={handleNuevoClienteChange}
+                className="border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-pink-500"
               >
-                ✕
+                <option value="Masculino">Masculino</option>
+                <option value="Femenino">Femenino</option>
+                <option value="Otro">Otro</option>
+              </select>
+
+              <select
+                name="estado_cuenta"
+                value={nuevoCliente.estado_cuenta}
+                onChange={handleNuevoClienteChange}
+                className="border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-pink-500"
+              >
+                <option value="Activo">Activo</option>
+                <option value="Inactivo">Inactivo</option>
+              </select>
+
+              <div className="md:col-span-2 flex justify-end space-x-4 pt-4">
+                <button
+                  type="button"
+                  className="px-4 py-2 rounded bg-gray-300 hover:bg-gray-400"
+                  onClick={() => setShowModal(false)}
+                >
+                  Cancelar
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-2 rounded bg-[#ca5c71] text-white hover:bg-pink-700"
+                >
+                  Guardar
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Modal para editar cliente */}
+      {editCliente && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+          <div className="bg-white rounded-lg w-full max-w-3xl p-6 relative">
+            <h2 className="text-2xl font-bold mb-4 text-[#ca5c71]">Editar Cliente</h2>
+
+            <form
+              onSubmit={e => {
+                e.preventDefault()
+                handleSaveEdit()
+              }}
+              className="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-[80vh] overflow-y-auto"
+            >
+              <input
+                name="nombre"
+                type="text"
+                placeholder="Nombre"
+                value={editCliente.nombre}
+                onChange={handleEditChange}
+                required
+                className="border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-pink-500"
+              />
+              <input
+                name="apellido"
+                type="text"
+                placeholder="Apellido"
+                value={editCliente.apellido}
+                onChange={handleEditChange}
+                required
+                className="border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-pink-500"
+              />
+              <input
+                name="correo_electronico"
+                type="email"
+                placeholder="Correo electrónico"
+                value={editCliente.correo_electronico}
+                onChange={handleEditChange}
+                required
+                className="border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-pink-500"
+              />
+              <input
+                name="contrasena"
+                type="password"
+                placeholder="Contraseña"
+                value={editCliente.contrasena}
+                onChange={handleEditChange}
+                required
+                className="border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-pink-500"
+              />
+              <input
+                name="dni"
+                type="text"
+                placeholder="DNI"
+                value={editCliente.dni}
+                onChange={handleEditChange}
+                required
+                className="border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-pink-500"
+              />
+              <input
+                name="teléfono"
+                type="text"
+                placeholder="Teléfono"
+                value={editCliente.teléfono}
+                onChange={handleEditChange}
+                required
+                className="border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-pink-500"
+              />
+              <input
+                name="dirección"
+                type="text"
+                placeholder="Dirección"
+                value={editCliente.dirección}
+                onChange={handleEditChange}
+                className="border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-pink-500"
+              />
+              <input
+                name="fecha_nacimiento"
+                type="date"
+                placeholder="Fecha de nacimiento"
+                value={editCliente.fecha_nacimiento}
+                onChange={handleEditChange}
+                required
+                className="border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-pink-500"
+              />
+              <select
+                name="género"
+                value={editCliente.género}
+                onChange={handleEditChange}
+                className="border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-pink-500"
+              >
+                <option value="Masculino">Masculino</option>
+                <option value="Femenino">Femenino</option>
+                <option value="Otro">Otro</option>
+              </select>
+
+              <select
+                name="estado_cuenta"
+                value={editCliente.estado_cuenta}
+                onChange={handleEditChange}
+                className="border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-pink-500"
+              >
+                <option value="Activo">Activo</option>
+                <option value="Inactivo">Inactivo</option>
+              </select>
+
+              <div className="md:col-span-2 flex justify-end space-x-4 pt-4">
+                <button
+                  type="button"
+                  className="px-4 py-2 rounded bg-gray-300 hover:bg-gray-400"
+                  onClick={() => setEditCliente(null)}
+                >
+                  Cancelar
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-2 rounded bg-[#ca5c71] text-white hover:bg-pink-700"
+                >
+                  Guardar Cambios
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Modal de confirmación para eliminar */}
+      {deleteCliente && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+          <div className="bg-white rounded-lg p-6 max-w-sm w-full">
+            <h2 className="text-xl font-semibold mb-4 text-[#ca5c71]">
+              Confirmar eliminación
+            </h2>
+            <p>¿Estás seguro que deseas eliminar al cliente <strong>{deleteCliente.nombre} {deleteCliente.apellido}</strong>?</p>
+
+            <div className="mt-6 flex justify-end space-x-4">
+              <button
+                onClick={() => setDeleteCliente(null)}
+                className="px-4 py-2 rounded bg-gray-300 hover:bg-gray-400"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={handleConfirmDelete}
+                className="px-4 py-2 rounded bg-red-600 text-white hover:bg-red-700"
+              >
+                Eliminar
               </button>
             </div>
           </div>
-        )}
-        {deleteCliente && (
-  <div className="fixed inset-0 backdrop-blur-sm flex items-center justify-center z-50">
-    <div className="bg-white p-6 rounded-xl shadow-xl w-full max-w-md relative">
-      <h2 className="text-xl font-bold mb-4 text-[#ca5c71]">¿Eliminar Cliente?</h2>
-      <p className="text-gray-700 mb-6">
-        ¿Estás seguro de que deseas eliminar a <span className="font-semibold">{deleteCliente.nombre}</span>?
-      </p>
-      <div className="flex justify-end space-x-4">
-        <button
-          onClick={() => setDeleteCliente(null)}
-          className="px-4 py-2 text-sm font-medium rounded-md border border-gray-300 text-gray-700 hover:bg-gray-100"
-        >
-          Cancelar
-        </button>
-        <button
-          onClick={handleConfirmDelete}
-          className="px-4 py-2 text-sm font-medium rounded-md bg-[#ca5c71] text-white hover:bg-pink-700"
-        >
-          Eliminar
-        </button>
-      </div>
-      <button
-        onClick={() => setDeleteCliente(null)}
-        className="absolute top-2 right-2 text-gray-500 hover:text-[#ca5c71] text-lg"
-      >
-        ✕
-      </button>
+        </div>
+      )}
     </div>
-  </div>
-)}
-
-      </main>
-    </div>
-    
   )
 }
 

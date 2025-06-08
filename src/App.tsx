@@ -1,14 +1,15 @@
 import { useState } from "react";
-import { FiUsers, FiShoppingBag, FiTruck, FiSearch, FiBell, FiUser, FiGrid, FiHome } from "react-icons/fi";
+import { FiUsers, FiShoppingBag, FiTruck, FiSearch, FiBell, FiUser, FiGrid, FiHome, FiPackage } from "react-icons/fi";
 import Producto from './Productos';
 import Categoria from './Categoria';
 import Trabajadores from './Trabajadores';
 import Proveedores from './Proveedores';
 import Clientes from "./Clientes";
+import CrudDelivery from "./Delivery";
 
 
 export default function App() {
-  const [pagina, setPagina] = useState<"inicio"|"trabajadores" | "producto"| "categoria" | "proveedores" | "clientes">("inicio");
+  const [pagina, setPagina] = useState<"inicio"|"trabajadores" | "producto"| "categoria" | "proveedores" | "clientes"|"delivery">("inicio");
 
   return (
     <div className="min-h-screen flex flex-col bg-white">
@@ -99,8 +100,21 @@ export default function App() {
                 >
                   <FiUser className="mr-1" /> Usuarios
                 </button>
+
+                
+                <button
+                  onClick={() => setPagina("delivery")}
+                  className={`inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium ${
+                    pagina === "delivery"
+                      ? "border-[#ca5c71] text-[#ca5c71]"
+                      : "border-transparent text-gray-600 hover:text-[#ca5c71] hover:border-[#ca5c71]"
+                  }`}
+                >
+                  <FiPackage className="mr-1" /> Delivery
+                </button>
               </nav>
             </div>
+
 
 
 
@@ -118,9 +132,6 @@ export default function App() {
           </div>
         </div>
       </header>
-
-
-
 
       {/* Contenido dinámico */}
       <main className="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -140,6 +151,8 @@ export default function App() {
         {pagina === "proveedores" && <Proveedores/>}
 
         {pagina === "clientes" && < Clientes />}
+
+        {pagina === "delivery" && < CrudDelivery />}
 
       </main>
 
