@@ -1,8 +1,17 @@
 import React from "react";
 import { useState, useRef } from 'react'
 import { ShoppingCart, LogIn, Search, Menu } from "lucide-react";
-import './index.css' 
+import './index.css'
+import { FiPackage, FiHome, FiShoppingBag, FiX } from 'react-icons/fi';
 
+// IMPORTACIÓN CORREGIDA DEL COMPONENTE MAPASIMPLE
+// Asegúrate de que la ruta sea correcta según donde hayas guardado MapaSimple.jsx
+// Si HomePage.jsx y MapaSimple.jsx están ambos en la carpeta 'src', esta es la correcta:
+import MapaSimple from './Mapa'; // <-- Asegúrate de que esta ruta sea correcta. Si Mapa.jsx está en la misma carpeta que HomePage.jsx
+
+// Si MapaSimple.jsx está en 'src/components', sería:
+// import MapaSimple from './components/MapaSimple';
+// Ajusta esta línea según la ubicación real de tu archivo MapaSimple.jsx
 
 const categories = [
   "Todos",
@@ -50,8 +59,6 @@ const allProducts = [
     price: 110,
     image: "https://dcuk1cxrnzjkh.cloudfront.net/imagesproducto/066780L.jpg",
   },
-
-
   {
     id: 5,
     name: "Losartán",
@@ -84,7 +91,6 @@ const allProducts = [
     price: 30,
     image: "https://dcuk1cxrnzjkh.cloudfront.net/imagesproducto/205052L.jpg",
   },
-
   {
     id: 9,
     name: "Omeprazol",
@@ -93,7 +99,6 @@ const allProducts = [
     price: 50,
     image: "https://farmaciauniversalpe.vtexassets.com/arquivos/ids/158088/01984_1.jpg?v=638428792795700000",
   },
-
   {
     id: 10,
     name: "Sucralfato",
@@ -102,17 +107,14 @@ const allProducts = [
     price: 65,
     image: "https://dcuk1cxrnzjkh.cloudfront.net/imagesproducto/034190L.jpg",
   },
-
-
   {
     id: 11,
-    name: "	Enalapril",
+    name: " Enalapril",
     description: "Relaja vasos y baja presión arterial, protege el corazón.",
     category: "Cuidado cardiovascular",
     price: 85,
     image: "https://farmaciauniversalpe.vtexassets.com/arquivos/ids/159455-800-auto?v=638591216595200000&width=800&height=auto&aspect=true",
   },
-
   {
     id: 12,
     name: "Metoprolol",
@@ -121,20 +123,14 @@ const allProducts = [
     price: 120,
     image: "https://farmaciaslider.pe/my-assets/image/product/8518f2c912d69b86e8f6dd754a198c48.jpg",
   },
-
-
-
   {
     id: 13,
     name: "Centrum",
-    description: "",
-    category: "Complejo multivitamínico con 26 nutrientes esenciales: vitaminas A–E, B1–B12, hierro, zinc, magnesio, etc.",
+    description: "Complejo multivitamínico con 26 nutrientes esenciales: vitaminas A–E, B1–B12, hierro, zinc, magnesio, etc.",
+    category: "Suplementos vitamínicos",
     price: 40,
     image: "https://rimage.ripley.com.pe/home.ripley/Attachment/MKP/1735/PMP20000174890/full_image-1.webp",
   },
-
-
-
   {
     id: 14,
     name: "Neurobion",
@@ -157,13 +153,49 @@ const HomePage: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState("Todos");
   const [selectedProduct, setSelectedProduct] = useState<null | typeof allProducts[0]>(null);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [showModal, setShowModal] = React.useState(false); // Estado para el primer modal (tipo de compra)
+  const [purchaseType, setPurchaseType] = React.useState('');
 
-  const detailRef = useRef<HTMLDivElement | null>(null); // 👈 Agregado
+  // Estados para el segundo modal de dirección
+  const [showAddressModal, setShowAddressModal] = useState(false);
+  // Estos estados ahora serán actualizados por el componente MapaSimple
+  const [address, setAddress] = useState(''); // ESTADO CLAVE PARA LA DIRECCIÓN
+  const [additionalReferences, setAdditionalReferences] = useState('');
+  const [numeroEncontrado, setNumeroEncontrado] = useState(true); // Para el estado del número en MapaSimple
+
+  const detailRef = useRef<HTMLDivElement | null>(null);
 
   const filteredProducts =
     selectedCategory === "Todos"
       ? allProducts
       : allProducts.filter((p) => p.category === selectedCategory);
+
+  // Función para abrir el modal de dirección (mapa)
+  const handleOpenAddressModal = (e: React.MouseEvent) => {
+    e.preventDefault();
+    setShowModal(false); // Cierra el primer modal
+    setShowAddressModal(true); // Abre el segundo modal (mapa)
+  };
+
+  // Función para cerrar el modal de dirección (mapa) y volver al modal de despacho
+  const handleCloseAddressModal = () => {
+    setShowAddressModal(false); // Cierra el modal del mapa
+    setShowModal(true); // Abre el modal de tipo de compra
+  };
+
+  // Función para guardar la dirección (en este punto, 'address' y 'additionalReferences'
+  // ya deberían estar actualizados por MapaSimple).
+  const handleSaveAddress = () => {
+    if (address) {
+      alert(`Dirección guardada: ${address}. Referencias adicionales: ${additionalReferences || 'Ninguna'}`);
+      setShowAddressModal(false); // Cierra el modal del mapa
+      setShowModal(true); // Vuelve a abrir el modal de tipo de compra
+      // Aquí iría la lógica para realmente guardar la dirección en tu aplicación/base de datos
+    } else {
+      // Este caso debería ser raro si el botón está disabled, pero es una buena práctica.
+      alert('Por favor, selecciona una dirección en el mapa.');
+    }
+  };
 
   return (
     <div className="bg-gray-50 min-h-screen px-2 md:px-4">
@@ -244,7 +276,6 @@ const HomePage: React.FC = () => {
           ))}
         </div>
 
-
         {/* Lista de productos */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {filteredProducts.map((product) => (
@@ -276,7 +307,6 @@ const HomePage: React.FC = () => {
         </div>
       </section>
 
-
       {/* Detalle del producto */}
       {selectedProduct && (
         <section ref={detailRef} className="py-10 px-4 bg-white rounded-2xl mb-6">
@@ -292,17 +322,179 @@ const HomePage: React.FC = () => {
               <p><strong>Nombre:</strong> {selectedProduct.name}</p>
               <p><strong>Descripción:</strong> {selectedProduct.description}</p>
               <p><strong>Precio:</strong> S/. {selectedProduct.price}</p>
+
               <button
                 onClick={() => setSelectedProduct(null)}
-                className="mt-4 px-4 py-2 bg-gray-200 rounded hover:bg-gray-300"
+                className="mt-4 px-4 py-2 bg-[#B73852] text-white rounded-lg hover:bg-[#a02e45] transition-colors duration-300 shadow-md"
               >
                 Volver
               </button>
+
+              {/* --- BOTÓN COMPRA --- */}
+              <button
+                onClick={() => setShowModal(true)}
+                className="mt-4 ml-4 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 flex items-center gap-2 transition-colors duration-300 shadow-md"
+              >
+                📦 Compra
+              </button>
+
+              {/* --- PRIMER MODAL: SELECCIONAR TIPO DE COMPRA (Despacho a Domicilio / Retiro en Tienda) --- */}
+              {showModal && (
+                <div className="fixed inset-0 bg-black bg-opacity-60 flex justify-center items-center z-50 p-4">
+                  <div className="bg-white rounded-lg p-6 w-full max-w-sm shadow-lg">
+                    <h3 className="text-xl font-bold text-gray-800 mb-6 text-center">¿Cómo entregaremos tu pedido?</h3>
+                    <form>
+                      {/* Opción: Despacho a domicilio */}
+                      <label className={`
+                        flex items-center gap-4 p-4 mb-4 rounded-lg border cursor-pointer transition-colors duration-200
+                        ${purchaseType === 'domicilio' ? 'border-[#B73852] bg-red-50' : 'border-gray-300 hover:bg-gray-50'}
+                      `}>
+                        <input
+                          type="radio"
+                          name="compra"
+                          value="domicilio"
+                          checked={purchaseType === 'domicilio'}
+                          onChange={() => setPurchaseType('domicilio')}
+                          className="form-radio h-5 w-5 text-[#B73852] focus:ring-[#B73852]"
+                        />
+                        <div className="flex-1"> {/* Añadido flex-1 para ocupar espacio y alinear */}
+                          <div className="flex items-center gap-2">
+                            <FiPackage className="text-xl" />
+                            <span className="font-semibold text-gray-800">Despacho a domicilio</span>
+                          </div>
+                          {/* Campo de dirección en el modal de despacho */}
+                          <p className="text-sm text-gray-500 mt-1">
+                            {address ? `Dirección: ${address}` : "Ingresa una dirección"}
+                          </p>
+                          {additionalReferences && (
+                            <p className="text-xs text-gray-500 mt-1">
+                              Referencias: {additionalReferences}
+                            </p>
+                          )}
+                          {!numeroEncontrado && address && ( // Muestra este mensaje si no hay número y hay dirección
+                            <p className="text-xs text-red-500 mt-1">
+                              *No se encontró número. Agrega referencias claras.
+                            </p>
+                          )}
+                          <button
+                            type="button"
+                            onClick={handleOpenAddressModal} // Abre el modal del mapa
+                            className="text-sm text-blue-600 hover:underline focus:outline-none mt-2"
+                          >
+                            {address ? "Cambiar dirección" : "Seleccionar dirección"}
+                          </button>
+                        </div>
+                      </label>
+
+                      {/* Opción: Retiro en Tienda */}
+                      <label className={`
+                        flex items-center gap-4 p-4 mb-6 rounded-lg border cursor-pointer transition-colors duration-200
+                        ${purchaseType === 'tienda' ? 'border-[#B73852] bg-red-50' : 'border-gray-300 hover:bg-gray-50'}
+                      `}>
+                        <input
+                          type="radio"
+                          name="compra"
+                          value="tienda"
+                          checked={purchaseType === 'tienda'}
+                          onChange={() => setPurchaseType('tienda')}
+                          className="form-radio h-5 w-5 text-[#B73852] focus:ring-[#B73852]"
+                        />
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <FiShoppingBag className="text-xl" />
+                            <span className="font-semibold text-gray-800">Retiro en Tienda</span>
+                          </div>
+                          <p className="text-sm text-gray-500 mt-1">Ubica una tienda</p>
+                        </div>
+                      </label>
+
+                      {/* Botones de acción del primer modal */}
+                      <div className="flex justify-between mt-4">
+                        <button
+                          type="button"
+                          onClick={() => setShowModal(false)}
+                          className="px-6 py-2 bg-white text-gray-700 border border-gray-300 rounded-md hover:bg-gray-100 transition-colors duration-300 text-sm font-medium"
+                        >
+                          Regresar
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={() => {
+                            if (purchaseType === 'domicilio' && !address) {
+                              alert('Por favor, selecciona una dirección para el despacho a domicilio.');
+                              return; // No cerrar el modal si falta la dirección para despacho
+                            }
+                            alert(`Tipo de compra guardado: ${purchaseType === 'domicilio' ? 'Despacho a domicilio' : 'Retiro en Tienda'}`);
+                            setShowModal(false); // Cierra el modal principal
+                            // Aquí podrías redirigir o continuar con el siguiente paso del flujo de compra
+                          }}
+                          disabled={!purchaseType || (purchaseType === 'domicilio' && !address)} // Deshabilitar si falta el tipo o la dirección de despacho
+                          className={`
+                            px-6 py-2 rounded-md text-white transition-colors duration-300 text-sm font-medium
+                            ${(purchaseType && (purchaseType !== 'domicilio' || address)) ? 'bg-[#B73852] hover:bg-[#a02e45]' : 'bg-gray-400 cursor-not-allowed'}
+                          `}
+                        >
+                          Guardar preferencias
+                        </button>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              )}
+              {/* --- FIN PRIMER MODAL --- */}
+
+              {/* --- SEGUNDO MODAL: AGREGAR DIRECCIÓN CON MAPA --- */}
+              {showAddressModal && (
+                <div className="fixed inset-0 bg-black bg-opacity-60 flex justify-center items-center z-50 p-4">
+                  <div className="bg-white rounded-lg p-6 w-full max-w-lg shadow-lg overflow-y-auto max-h-[90vh]"> {/* Added max-h for scroll */}
+                    {/* Encabezado del modal de dirección */}
+                    <div className="flex justify-between items-center mb-6">
+                      <h3 className="text-xl font-bold text-gray-800">Agregar dirección</h3>
+                      <button onClick={handleCloseAddressModal} className="text-gray-500 hover:text-gray-700">
+                        <FiX className="w-6 h-6" />
+                      </button>
+                    </div>
+
+                    {/* Aquí se integra el componente MapaSimple */}
+                    {/* Le pasamos las funciones setState para que pueda actualizar los estados del padre */}
+                    <MapaSimple
+                      setDireccion={setAddress} // Esto es lo que actualiza 'address' en HomePage
+                      setReferencias={setAdditionalReferences} // Esto actualiza 'additionalReferences' en HomePage
+                      setNumeroEncontrado={setNumeroEncontrado} // Esto actualiza 'numeroEncontrado' en HomePage
+                    />
+
+                    {/* Botones de acción del segundo modal */}
+                    <div className="flex justify-between mt-6">
+                      <button
+                        type="button"
+                        onClick={handleCloseAddressModal} // Cierra el modal de dirección y vuelve al anterior
+                        className="px-6 py-2 bg-white text-gray-700 border border-gray-300 rounded-md hover:bg-gray-100 transition-colors duration-300 text-sm font-medium"
+                      >
+                        Cancelar
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={handleSaveAddress} // Llama a la función que guarda y cierra
+                        disabled={!address} // Deshabilitado si no hay dirección (del mapa)
+                        className={`
+                          px-6 py-2 rounded-md text-white transition-colors duration-300 text-sm font-medium
+                          ${address ? 'bg-[#B73852] hover:bg-[#a02e45]' : 'bg-gray-400 cursor-not-allowed'}
+                        `}
+                      >
+                        Guardar dirección
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
+              {/* --- FIN SEGUNDO MODAL --- */}
+
             </div>
           </div>
         </section>
       )}
-
 
       {/* Footer */}
       <footer className="bg-white py-6 mt-10 text-center border-t rounded-2xl">
