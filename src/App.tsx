@@ -1,10 +1,10 @@
-import React from "react";
-import { useState, useRef } from 'react'
+import React, { useState, useRef } from "react";
 import { ShoppingCart, LogIn, Search } from "lucide-react";
-import './index.css'
-import { FiPackage, FiHome, FiShoppingBag, FiX,FiTrash2 } from 'react-icons/fi';
-
-import MapaSimple from './Mapa'; // <-- Asegúrate de que esta ruta sea correcta. Si Mapa.jsx está en la misma carpeta que HomePage.jsx
+import { FiPackage, FiHome, FiShoppingBag, FiX, FiTrash2 } from "react-icons/fi";
+import { FaCheckCircle } from "react-icons/fa";
+import "./index.css";
+import MapaSimple from "./Mapa"; // Asegúrate de que la ruta sea correcta.
+import jsPDF from "jspdf";
 
 const categories = [
   "Todos",
@@ -22,11 +22,13 @@ const categories = [
 const allProducts = [
   {
     id: 1,
-    name: "Flekosteel ",
-    description: "Es un producto que atenua el espasmo muscular y la inflamación, reduce el proceso de degeneración del tejido cartilaginoso y mejora su metabolismo.",
+    name: "Flekosteel",
+    description:
+      "Es un producto que atenua el espasmo muscular y la inflamación, reduce el proceso de degeneración del tejido cartilaginoso y mejora su metabolismo.",
     category: "Cuidado de articulaciones",
     price: 80,
-    image: "https://dcuk1cxrnzjkh.cloudfront.net/seller/1686676142018L.jpg",
+    image:
+      "https://dcuk1cxrnzjkh.cloudfront.net/seller/1686676142018L.jpg",
   },
   {
     id: 2,
@@ -34,47 +36,58 @@ const allProducts = [
     description: "",
     category: "Cuidado de articulaciones",
     price: 60,
-    image: "https://dcuk1cxrnzjkh.cloudfront.net/seller/1681698059935L.jpg",
+    image:
+      "https://dcuk1cxrnzjkh.cloudfront.net/seller/1681698059935L.jpg",
   },
   {
     id: 3,
     name: "Glyconorm",
-    description: "Indicado para aliviar y controlar los síntomas de la diabetes para de esta manera mejorar su salud de manera natural. Los ingredientes activos de Glyconorm regulan los niveles de azúr",
+    description:
+      "Indicado para aliviar y controlar los síntomas de la diabetes para de esta manera mejorar su salud de manera natural. Los ingredientes activos de Glyconorm regulan los niveles de azúcar.",
     category: "Cuidado de la diabetes",
     price: 150,
-    image: "https://dcuk1cxrnzjkh.cloudfront.net/seller/1698082744009L.jpg",
+    image:
+      "https://dcuk1cxrnzjkh.cloudfront.net/seller/1698082744009L.jpg",
   },
   {
     id: 4,
     name: "Vital vitaminado",
-    description: "Es una mezcla de alimentos,libre de azúcar y que puede ser consumido como parte de una alimentación saludable",
+    description:
+      "Es una mezcla de alimentos, libre de azúcar y que puede ser consumido como parte de una alimentación saludable",
     category: "Cuidado de la diabetes",
     price: 110,
-    image: "https://dcuk1cxrnzjkh.cloudfront.net/imagesproducto/066780L.jpg",
+    image:
+      "https://dcuk1cxrnzjkh.cloudfront.net/imagesproducto/066780L.jpg",
   },
   {
     id: 5,
     name: "Losartán",
-    description: "Se utiliza en pacientes con nefropatía diabética o hipertensión para proteger el riñón y reducir la proteinuria.",
+    description:
+      "Se utiliza en pacientes con nefropatía diabética o hipertensión para proteger el riñón y reducir la proteinuria.",
     category: "Cuidado renal",
     price: 90,
-    image: "https://farmaciaslider.pe/my-assets/image/product/8d78e3c19f109aea7d6ee5c56991b89e.jpg",
+    image:
+      "https://farmaciaslider.pe/my-assets/image/product/8d78e3c19f109aea7d6ee5c56991b89e.jpg",
   },
   {
     id: 6,
     name: "Silimarina",
-    description: "Protector hepático natural. Derivado del cardo mariano, ayuda a regenerar células hepáticas y reducir la inflamación.",
+    description:
+      "Protector hepático natural. Derivado del cardo mariano, ayuda a regenerar células hepáticas y reducir la inflamación.",
     category: "Cuidado del hígado",
     price: 95,
-    image: "https://res.cloudinary.com/riqra/image/upload/w_656,h_656,c_limit,q_auto,f_auto/v1643152268/sellers/salud-farma/products/igiuithhusw8dpjolzjm.png",
+    image:
+      "https://res.cloudinary.com/riqra/image/upload/w_656,h_656,c_limit,q_auto,f_auto/v1643152268/sellers/salud-farma/products/igiuithhusw8dpjolzjm.png",
   },
   {
     id: 7,
-    name: "Ambroxol ",
-    description: "Actúa sobre las secreciones bronquiales haciendo que las flemas sean más fluidas, facilitando su expulsión mediante la tos.",
+    name: "Ambroxol",
+    description:
+      "Actúa sobre las secreciones bronquiales haciendo que las flemas sean más fluidas, facilitando su expulsión mediante la tos.",
     category: "Cuidado respiratorio",
     price: 70,
-    image: "https://www.hogarysalud.com.pe/wp-content/uploads/2024/10/75110-C2.jpg",
+    image:
+      "https://www.hogarysalud.com.pe/wp-content/uploads/2024/10/75110-C2.jpg",
   },
   {
     id: 8,
@@ -82,7 +95,8 @@ const allProducts = [
     description: "Elimina bacterias causantes de infecciones oculares.",
     category: "Cuidado de los ojos",
     price: 30,
-    image: "https://dcuk1cxrnzjkh.cloudfront.net/imagesproducto/205052L.jpg",
+    image:
+      "https://dcuk1cxrnzjkh.cloudfront.net/imagesproducto/205052L.jpg",
   },
   {
     id: 9,
@@ -90,7 +104,8 @@ const allProducts = [
     description: "Bloquea la secreción ácida gástrica hasta 24 h.",
     category: "Salud digestiva",
     price: 50,
-    image: "https://farmaciauniversalpe.vtexassets.com/arquivos/ids/158088/01984_1.jpg?v=638428792795700000",
+    image:
+      "https://farmaciauniversalpe.vtexassets.com/arquivos/ids/158088/01984_1.jpg?v=638428792795700000",
   },
   {
     id: 10,
@@ -98,15 +113,17 @@ const allProducts = [
     description: "Forma una barrera gel protectora sobre úlceras.",
     category: "Salud digestiva",
     price: 65,
-    image: "https://dcuk1cxrnzjkh.cloudfront.net/imagesproducto/034190L.jpg",
+    image:
+      "https://dcuk1cxrnzjkh.cloudfront.net/imagesproducto/034190L.jpg",
   },
   {
     id: 11,
-    name: " Enalapril",
+    name: "Enalapril",
     description: "Relaja vasos y baja presión arterial, protege el corazón.",
     category: "Cuidado cardiovascular",
     price: 85,
-    image: "https://farmaciauniversalpe.vtexassets.com/arquivos/ids/159455-800-auto?v=638591216595200000&width=800&height=auto&aspect=true",
+    image:
+      "https://farmaciauniversalpe.vtexassets.com/arquivos/ids/159455-800-auto?v=638591216595200000&width=800&height=auto&aspect=true",
   },
   {
     id: 12,
@@ -114,15 +131,18 @@ const allProducts = [
     description: "Controla frecuencia y presión.",
     category: "Cuidado cardiovascular",
     price: 120,
-    image: "https://farmaciaslider.pe/my-assets/image/product/8518f2c912d69b86e8f6dd754a198c48.jpg",
+    image:
+      "https://farmaciaslider.pe/my-assets/image/product/8518f2c912d69b86e8f6dd754a198c48.jpg",
   },
   {
     id: 13,
     name: "Centrum",
-    description: "Complejo multivitamínico con 26 nutrientes esenciales: vitaminas A–E, B1–B12, hierro, zinc, magnesio, etc.",
+    description:
+      "Complejo multivitamínico con 26 nutrientes esenciales: vitaminas A–E, B1–B12, hierro, zinc, magnesio, etc.",
     category: "Suplementos vitamínicos",
     price: 40,
-    image: "https://rimage.ripley.com.pe/home.ripley/Attachment/MKP/1735/PMP20000174890/full_image-1.webp",
+    image:
+      "https://rimage.ripley.com.pe/home.ripley/Attachment/MKP/1735/PMP20000174890/full_image-1.webp",
   },
   {
     id: 14,
@@ -130,15 +150,18 @@ const allProducts = [
     description: "Contiene vitaminas B1, B6 y B12.",
     category: "Suplementos vitamínicos",
     price: 55,
-    image: "https://dcuk1cxrnzjkh.cloudfront.net/imagesproducto/072581L.jpg",
+    image:
+      "https://dcuk1cxrnzjkh.cloudfront.net/imagesproducto/072581L.jpg",
   },
   {
     id: 15,
     name: "Vitaglobin",
-    description: "Hierro + vitamina C + B12 + ácido fólico + zinc.",
+    description:
+      "Hierro + vitamina C + B12 + ácido fólico + zinc.",
     category: "Suplementos vitamínicos",
     price: 45,
-    image: "https://pharmacie-denni.dz/wp-content/uploads/2025/05/vitaglobin.jpg",
+    image:
+      "https://pharmacie-denni.dz/wp-content/uploads/2025/05/vitaglobin.jpg",
   },
 ];
 
@@ -147,7 +170,8 @@ const HomePage: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState("Todos");
   const [selectedProduct, setSelectedProduct] = useState<null | typeof allProducts[0]>(null);
   const [menuOpen, setMenuOpen] = useState(false);
-  const [showModal, setShowModal] = useState(false); // Modal para seleccionar el tipo de compra
+  // Modal para seleccionar el tipo de compra (Preferencias)
+  const [showModal, setShowModal] = useState(false);
   const [purchaseType, setPurchaseType] = useState("");
 
   // Estados para el modal de dirección (mapa)
@@ -161,14 +185,15 @@ const HomePage: React.FC = () => {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [showCartModal, setShowCartModal] = useState(false);
 
+  // Estado para el modal de confirmación de compra
+  const [showConfirmation, setShowConfirmation] = useState(false);
+
   // Referencia para hacer scroll al detalle del producto
   const detailRef = useRef<HTMLDivElement | null>(null);
 
   // Filtrado de productos según la categoría seleccionada
   const filteredProducts =
-    selectedCategory === "Todos"
-      ? allProducts
-      : allProducts.filter((p) => p.category === selectedCategory);
+    selectedCategory === "Todos" ? allProducts : allProducts.filter((p) => p.category === selectedCategory);
 
   // Funciones para el modal de dirección
   const handleOpenAddressModal = (e: React.MouseEvent) => {
@@ -185,9 +210,7 @@ const HomePage: React.FC = () => {
   const handleSaveAddress = () => {
     if (address) {
       alert(
-        `Dirección guardada: ${address}. Referencias adicionales: ${
-          additionalReferences || "Ninguna"
-        }`
+        `Dirección guardada: ${address}. Referencias adicionales: ${additionalReferences || "Ninguna"}`
       );
       setShowAddressModal(false);
       setShowModal(true);
@@ -199,15 +222,27 @@ const HomePage: React.FC = () => {
   // Función para agregar producto al carrito desde el detalle
   const handleAddToCart = () => {
     if (!selectedProduct) return;
-    // Agregamos el producto con cantidad inicial 1
-    setCartItems((prevItems) => [
-      ...prevItems,
-      { product: selectedProduct, quantity: 1 },
-    ]);
+    // Verifica si el producto ya está en el carrito para actualizar la cantidad
+    const existingItem = cartItems.find((item) => item.product.id === selectedProduct.id);
+    if (existingItem) {
+      setCartItems((prevItems) =>
+        prevItems.map((item) =>
+          item.product.id === selectedProduct.id
+            ? { ...item, quantity: item.quantity + 1 }
+            : item
+        )
+      );
+    } else {
+      // Agregamos el producto con cantidad inicial 1
+      setCartItems((prevItems) => [
+        ...prevItems,
+        { product: selectedProduct, quantity: 1 },
+      ]);
+    }
     alert("Producto agregado al carrito");
   };
 
-  // Funciones para manejar la cantidad en el detalle (control exclusivo en el detalle)
+  // Funciones para manejar la cantidad en el detalle
   const handleIncrementCart = (productId: number) => {
     setCartItems((prevItems) =>
       prevItems.map((item) =>
@@ -246,6 +281,86 @@ const HomePage: React.FC = () => {
   const productInCart = selectedProduct
     ? cartItems.find((item) => item.product.id === selectedProduct.id)
     : undefined;
+
+  // Función para generar la boleta en PDF usando jsPDF
+  const generatePdfBoleta = () => {
+    if (cartItems.length === 0) {
+      alert("El carrito está vacío. Agrega productos para generar la boleta.");
+      return;
+    }
+
+    const doc = new jsPDF();
+    let yPos = 20; // Posición inicial en el eje Y
+
+    doc.setFontSize(22);
+    doc.text("Boleta de Compra - PharmaYap", 105, yPos, { align: "center" });
+    yPos += 15;
+
+    doc.setFontSize(12);
+    doc.text(`Fecha: ${new Date().toLocaleDateString()}`, 10, yPos);
+    yPos += 7;
+    doc.text(
+      `Tipo de Compra: ${
+        purchaseType === "domicilio" ? "Despacho a domicilio" : "Retiro en Tienda"
+      }`,
+      10,
+      yPos
+    );
+    if (purchaseType === "domicilio" && address) {
+      yPos += 7;
+      doc.text(`Dirección: ${address}`, 10, yPos);
+      if (additionalReferences) {
+        yPos += 7;
+        doc.text(`Referencias: ${additionalReferences}`, 10, yPos);
+      }
+    }
+    yPos += 15;
+
+    // Encabezados de la tabla
+    doc.setFontSize(10);
+    doc.setFont("helvetica", "bold");
+    doc.text("Producto", 10, yPos);
+    doc.text("Cantidad", 100, yPos);
+    doc.text("P. Unit.", 130, yPos);
+    doc.text("Subtotal", 170, yPos);
+    yPos += 5;
+    doc.line(10, yPos, 200, yPos); // Línea debajo de los encabezados
+    yPos += 5;
+
+    doc.setFont("helvetica", "normal");
+    cartItems.forEach((item) => {
+      if (yPos > 280) {
+        doc.addPage();
+        yPos = 20;
+        doc.setFontSize(10);
+        doc.setFont("helvetica", "bold");
+        doc.text("Producto", 10, yPos);
+        doc.text("Cantidad", 100, yPos);
+        doc.text("P. Unit.", 130, yPos);
+        doc.text("Subtotal", 170, yPos);
+        yPos += 5;
+        doc.line(10, yPos, 200, yPos);
+        yPos += 5;
+        doc.setFont("helvetica", "normal");
+      }
+      doc.text(item.product.name, 10, yPos);
+      doc.text(item.quantity.toString(), 100, yPos);
+      doc.text(`S/. ${item.product.price.toFixed(2)}`, 130, yPos);
+      doc.text(`S/. ${(item.product.price * item.quantity).toFixed(2)}`, 170, yPos);
+      yPos += 7;
+    });
+
+    yPos += 10;
+    doc.line(10, yPos, 200, yPos);
+    yPos += 5;
+
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(14);
+    doc.text(`Total: S/. ${getCartTotal().toFixed(2)}`, 170, yPos, { align: "right" });
+    yPos += 10;
+
+    doc.save(`boleta_pharmyap_${new Date().toISOString().slice(0, 10)}.pdf`);
+  };
 
   return (
     <div className="bg-gray-50 min-h-screen px-2 md:px-4">
@@ -310,7 +425,6 @@ const HomePage: React.FC = () => {
             </button>
           ))}
         </div>
-
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {filteredProducts.map((product) => (
             <div
@@ -392,10 +506,9 @@ const HomePage: React.FC = () => {
                 </button>
               </div>
 
-              {/* Botón "Agregar al carrito" o el selector de cantidad en el detalle */}
+              {/* Botón "Agregar al carrito" o el selector de cantidad */}
               <div className="mt-6">
                 {!productInCart ? (
-                  // Estado inicial: botón personalizado
                   <button
                     onClick={handleAddToCart}
                     className="w-auto bg-pink-300 hover:bg-pink-400 text-white py-1 px-4 rounded-md transition-colors text-sm"
@@ -403,8 +516,6 @@ const HomePage: React.FC = () => {
                     Agregar al carrito
                   </button>
                 ) : (
-                  // Una vez agregado, se muestra el selector de cantidad:
-                  // Si la cantidad es 1 se muestra el ícono de trash; si es mayor, se muestra el botón “-”
                   <div className="flex items-center justify-center space-x-3 bg-gray-100 p-2 rounded-md">
                     {productInCart.quantity > 1 ? (
                       <button
@@ -441,18 +552,20 @@ const HomePage: React.FC = () => {
               </div>
             </div>
           </div>
+        </section>
+      )}
 
-          {/* --- MODAL 1: Selección del Tipo de Compra --- */}
-          {showModal && (
-            <div className="fixed inset-0 bg-black bg-opacity-60 flex justify-center items-center z-50 p-4">
-              <div className="bg-white rounded-lg p-6 w-full max-w-sm shadow-lg">
-                <h3 className="text-xl font-bold text-gray-800 mb-6 text-center">
-                  ¿Cómo entregaremos tu pedido?
-                </h3>
-                <form>
-                  {/* Opción: Despacho a domicilio */}
-                  <label
-                    className={`
+      {/* --- MODAL 1: Selección del Tipo de Compra (Preferencias) --- */}
+      {showModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-60 flex justify-center items-center z-50 p-4">
+          <div className="bg-white rounded-lg p-6 w-full max-w-sm shadow-lg">
+            <h3 className="text-xl font-bold text-gray-800 mb-6 text-center">
+              ¿Cómo entregaremos tu pedido?
+            </h3>
+            <form>
+              {/* Opción: Despacho a domicilio */}
+              <label
+                className={`
                       flex items-center gap-4 p-4 mb-4 rounded-lg border cursor-pointer transition-colors duration-200
                       ${
                         purchaseType === "domicilio"
@@ -460,48 +573,48 @@ const HomePage: React.FC = () => {
                           : "border-gray-300 hover:bg-gray-50"
                       }
                     `}
+              >
+                <input
+                  type="radio"
+                  name="compra"
+                  value="domicilio"
+                  checked={purchaseType === "domicilio"}
+                  onChange={() => setPurchaseType("domicilio")}
+                  className="form-radio h-5 w-5 text-[#B73852] focus:ring-[#B73852]"
+                />
+                <div className="flex-1">
+                  <div className="flex items-center gap-2">
+                    <FiPackage className="text-xl" />
+                    <span className="font-semibold text-gray-800">
+                      Despacho a domicilio
+                    </span>
+                  </div>
+                  <p className="text-sm text-gray-500 mt-1">
+                    {address ? `Dirección: ${address}` : "Ingresa una dirección"}
+                  </p>
+                  {additionalReferences && (
+                    <p className="text-xs text-gray-500 mt-1">
+                      Referencias: {additionalReferences}
+                    </p>
+                  )}
+                  {!numeroEncontrado && address && (
+                    <p className="text-xs text-red-500 mt-1">
+                      *No se encontró número. Agrega referencias claras.
+                    </p>
+                  )}
+                  <button
+                    type="button"
+                    onClick={handleOpenAddressModal}
+                    className="text-sm text-blue-600 hover:underline focus:outline-none mt-2"
                   >
-                    <input
-                      type="radio"
-                      name="compra"
-                      value="domicilio"
-                      checked={purchaseType === "domicilio"}
-                      onChange={() => setPurchaseType("domicilio")}
-                      className="form-radio h-5 w-5 text-[#B73852] focus:ring-[#B73852]"
-                    />
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2">
-                        <FiPackage className="text-xl" />
-                        <span className="font-semibold text-gray-800">
-                          Despacho a domicilio
-                        </span>
-                      </div>
-                      <p className="text-sm text-gray-500 mt-1">
-                        {address ? `Dirección: ${address}` : "Ingresa una dirección"}
-                      </p>
-                      {additionalReferences && (
-                        <p className="text-xs text-gray-500 mt-1">
-                          Referencias: {additionalReferences}
-                        </p>
-                      )}
-                      {!numeroEncontrado && address && (
-                        <p className="text-xs text-red-500 mt-1">
-                          *No se encontró número. Agrega referencias claras.
-                        </p>
-                      )}
-                      <button
-                        type="button"
-                        onClick={handleOpenAddressModal}
-                        className="text-sm text-blue-600 hover:underline focus:outline-none mt-2"
-                      >
-                        {address ? "Cambiar dirección" : "Seleccionar dirección"}
-                      </button>
-                    </div>
-                  </label>
+                    {address ? "Cambiar dirección" : "Seleccionar dirección"}
+                  </button>
+                </div>
+              </label>
 
-                  {/* Opción: Retiro en Tienda */}
-                  <label
-                    className={`
+              {/* Opción: Retiro en Tienda */}
+              <label
+                className={`
                       flex items-center gap-4 p-4 mb-6 rounded-lg border cursor-pointer transition-colors duration-200
                       ${
                         purchaseType === "tienda"
@@ -509,55 +622,50 @@ const HomePage: React.FC = () => {
                           : "border-gray-300 hover:bg-gray-50"
                       }
                     `}
-                  >
-                    <input
-                      type="radio"
-                      name="compra"
-                      value="tienda"
-                      checked={purchaseType === "tienda"}
-                      onChange={() => setPurchaseType("tienda")}
-                      className="form-radio h-5 w-5 text-[#B73852] focus:ring-[#B73852]"
-                    />
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <FiShoppingBag className="text-xl" />
-                        <span className="font-semibold text-gray-800">
-                          Retiro en Tienda
-                        </span>
-                      </div>
-                      <p className="text-sm text-gray-500 mt-1">
-                        Ubica una tienda
-                      </p>
-                    </div>
-                  </label>
+              >
+                <input
+                  type="radio"
+                  name="compra"
+                  value="tienda"
+                  checked={purchaseType === "tienda"}
+                  onChange={() => setPurchaseType("tienda")}
+                  className="form-radio h-5 w-5 text-[#B73852] focus:ring-[#B73852]"
+                />
+                <div>
+                  <div className="flex items-center gap-2">
+                    <FiShoppingBag className="text-xl" />
+                    <span className="font-semibold text-gray-800">
+                      Retiro en Tienda
+                    </span>
+                  </div>
+                  <p className="text-sm text-gray-500 mt-1">Ubica una tienda</p>
+                </div>
+              </label>
 
-                  {/* Botones de acción del modal */}
-                  <div className="flex justify-between mt-4">
-                    <button
-                      type="button"
-                      onClick={() => setShowModal(false)}
-                      className="px-6 py-2 bg-white text-gray-700 border border-gray-300 rounded-md hover:bg-gray-100 transition-colors duration-300 text-sm font-medium"
-                    >
-                      Regresar
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        if (purchaseType === "domicilio" && !address) {
-                          alert("Por favor, selecciona una dirección para el despacho a domicilio.");
-                          return;
-                        }
-                        alert(
-                          `Tipo de compra guardado: ${
-                            purchaseType === "domicilio"
-                              ? "Despacho a domicilio"
-                              : "Retiro en Tienda"
-                          }`
-                        );
-                        setShowModal(false);
-                      }}
-                      disabled={!purchaseType || (purchaseType === "domicilio" && !address)}
-                      className={`
+              {/* Botones de acción del modal */}
+              <div className="flex justify-between mt-4">
+                <button
+                  type="button"
+                  onClick={() => setShowModal(false)}
+                  className="px-6 py-2 bg-white text-gray-700 border border-gray-300 rounded-md hover:bg-gray-100 transition-colors duration-300 text-sm font-medium"
+                >
+                  Regresar
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (purchaseType === "domicilio" && !address) {
+                      alert(
+                        "Por favor, selecciona una dirección para el despacho a domicilio."
+                      );
+                      return;
+                    }
+                    // Cierra el modal de preferencias y muestra el modal de confirmación
+                    setShowModal(false);
+                    setShowConfirmation(true);
+                  }}
+                  disabled={!purchaseType || (purchaseType === "domicilio" && !address)}
+                  className={`
                         px-6 py-2 rounded-md text-white transition-colors duration-300 text-sm font-medium
                         ${
                           purchaseType && (purchaseType !== "domicilio" || address)
@@ -565,48 +673,48 @@ const HomePage: React.FC = () => {
                             : "bg-gray-400 cursor-not-allowed"
                         }
                       `}
-                    >
-                      Guardar preferencias
-                    </button>
-                  </div>
-                </form>
+                >
+                  Guardar preferencias
+                </button>
               </div>
-            </div>
-          )}
+            </form>
+          </div>
+        </div>
+      )}
 
-          {/* --- MODAL 2: Agregar Dirección con Mapa --- */}
-          {showAddressModal && (
-            <div className="fixed inset-0 bg-black bg-opacity-60 flex justify-center items-center z-50 p-4">
-              <div className="bg-white rounded-lg p-6 w-full max-w-lg shadow-lg overflow-y-auto max-h-[90vh]">
-                <div className="flex justify-between items-center mb-6">
-                  <h3 className="text-xl font-bold text-gray-800">
-                    Agregar dirección
-                  </h3>
-                  <button
-                    onClick={handleCloseAddressModal}
-                    className="text-gray-500 hover:text-gray-700"
-                  >
-                    <FiX className="w-6 h-6" />
-                  </button>
-                </div>
-                <MapaSimple
-                  setDireccion={setAddress}
-                  setReferencias={setAdditionalReferences}
-                  setNumeroEncontrado={setNumeroEncontrado}
-                />
-                <div className="flex justify-between mt-6">
-                  <button
-                    type="button"
-                    onClick={handleCloseAddressModal}
-                    className="px-6 py-2 bg-white text-gray-700 border border-gray-300 rounded-md hover:bg-gray-100 transition-colors duration-300 text-sm font-medium"
-                  >
-                    Cancelar
-                  </button>
-                  <button
-                    type="button"
-                    onClick={handleSaveAddress}
-                    disabled={!address}
-                    className={`
+      {/* --- MODAL 2: Agregar Dirección con Mapa --- */}
+      {showAddressModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-60 flex justify-center items-center z-50 p-4">
+          <div className="bg-white rounded-lg p-6 w-full max-w-lg shadow-lg overflow-y-auto max-h-[90vh]">
+            <div className="flex justify-between items-center mb-6">
+              <h3 className="text-xl font-bold text-gray-800">
+                Agregar dirección
+              </h3>
+              <button
+                onClick={handleCloseAddressModal}
+                className="text-gray-500 hover:text-gray-700"
+              >
+                <FiX className="w-6 h-6" />
+              </button>
+            </div>
+            <MapaSimple
+              setDireccion={setAddress}
+              setReferencias={setAdditionalReferences}
+              setNumeroEncontrado={setNumeroEncontrado}
+            />
+            <div className="flex justify-between mt-6">
+              <button
+                type="button"
+                onClick={handleCloseAddressModal}
+                className="px-6 py-2 bg-white text-gray-700 border border-gray-300 rounded-md hover:bg-gray-100 transition-colors duration-300 text-sm font-medium"
+              >
+                Cancelar
+              </button>
+              <button
+                type="button"
+                onClick={handleSaveAddress}
+                disabled={!address}
+                className={`
                       px-6 py-2 rounded-md text-white transition-colors duration-300 text-sm font-medium
                       ${
                         address
@@ -614,23 +722,24 @@ const HomePage: React.FC = () => {
                           : "bg-gray-400 cursor-not-allowed"
                       }
                     `}
-                  >
-                    Guardar dirección
-                  </button>
-                </div>
-              </div>
+              >
+                Guardar dirección
+              </button>
             </div>
-          )}
-        </section>
+          </div>
+        </div>
       )}
 
-      {/* MODAL DEL CARRITO – Diseño actualizado sin controles de cantidad */}
+      {/* --- MODAL DEL CARRITO – Diseño actualizado con botón de boleta --- */}
       {showCartModal && (
         <div className="fixed inset-0 bg-black bg-opacity-60 flex justify-center items-center z-50 p-4">
           <div className="bg-white rounded-lg w-full max-w-lg shadow-lg overflow-hidden">
             <div className="px-6 py-4 flex items-center justify-between border-b">
               <h3 className="text-xl font-bold">Carrito de Compras</h3>
-              <button onClick={() => setShowCartModal(false)} className="text-gray-500 hover:text-gray-700">
+              <button
+                onClick={() => setShowCartModal(false)}
+                className="text-gray-500 hover:text-gray-700"
+              >
                 <FiX className="w-6 h-6" />
               </button>
             </div>
@@ -640,7 +749,10 @@ const HomePage: React.FC = () => {
               ) : (
                 <ul>
                   {cartItems.map((item, index) => (
-                    <li key={index} className="px-6 py-4 flex items-center justify-between">
+                    <li
+                      key={index}
+                      className="px-6 py-4 flex items-center justify-between"
+                    >
                       <div className="flex items-center gap-4">
                         <img
                           src={item.product.image}
@@ -648,15 +760,19 @@ const HomePage: React.FC = () => {
                           className="h-20 w-20 object-cover rounded"
                         />
                         <div className="flex flex-col">
-                          <p className="font-semibold text-lg">{item.product.name}</p>
-                          <p className="text-gray-600">S/. {item.product.price}</p>
+                          <p className="font-semibold text-lg">
+                            {item.product.name}
+                          </p>
+                          <p className="text-gray-600">
+                            S/. {item.product.price.toFixed(2)}
+                          </p>
                           <p className="text-sm text-gray-600">
-                            Subtotal: S/. {item.product.price * item.quantity}
+                            Subtotal: S/.{" "}
+                            {(item.product.price * item.quantity).toFixed(2)}
                           </p>
                         </div>
                       </div>
                       <div>
-                        {/* Solo mostramos la cantidad sin controles */}
                         <span className="text-lg font-semibold">
                           Cantidad: {item.quantity}
                         </span>
@@ -669,10 +785,44 @@ const HomePage: React.FC = () => {
             <div className="px-6 py-4 border-t">
               <div className="flex items-center justify-between mb-4">
                 <span className="text-lg font-bold">Total:</span>
-                <span className="text-lg font-bold">S/. {getCartTotal()}</span>
+                <span className="text-lg font-bold">
+                  S/. {getCartTotal().toFixed(2)}
+                </span>
               </div>
               <button className="w-full bg-green-600 hover:bg-green-700 text-white py-2 rounded-md transition-colors">
                 Realizar Compra
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* --- MODAL DE COMPRA CONFIRMADA --- */}
+      {showConfirmation && (
+        <div className="fixed inset-0 flex items-center justify-center z-50 bg-white bg-opacity-30 backdrop-blur-md">
+          <div className="bg-white rounded-2xl shadow-2xl overflow-hidden transform transition-all max-w-lg w-full">
+            <div className="relative p-6 bg-gradient-to-r from-[#c85c73] to-pink-500">
+              <div className="absolute -top-10 left-1/2 transform -translate-x-1/2">
+                <div className="flex items-center justify-center w-16 h-16 bg-white rounded-full shadow-lg">
+                  <FaCheckCircle className="text-[#c85c73] text-3xl" />
+                </div>
+              </div>
+              <h2 className="mt-10 text-2xl font-bold text-white text-center">
+                Compra Confirmada
+              </h2>
+              <p className="mt-2 text-center text-white">
+                Gracias por su compra, su transacción fue exitosa.
+              </p>
+            </div>
+            <div className="p-6 bg-white">
+              <button
+                onClick={() => {
+                  generatePdfBoleta();
+                  setShowConfirmation(false);
+                }}
+                className="w-full px-4 py-3 bg-red-600 hover:bg-red-700 text-white font-semibold rounded shadow transition-all duration-300 transform hover:scale-105 hover:shadow-xl"
+              >
+                Generar Boleta
               </button>
             </div>
           </div>
