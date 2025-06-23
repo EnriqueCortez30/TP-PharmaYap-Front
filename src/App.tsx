@@ -672,7 +672,7 @@ const HomePage: React.FC = () => {
                 <span className="text-lg font-bold">S/. {getCartTotal()}</span>
               </div>
               <button className="w-full bg-green-600 hover:bg-green-700 text-white py-2 rounded-md transition-colors">
-                Finalizar Compra
+                Realizar Compra
               </button>
             </div>
           </div>
