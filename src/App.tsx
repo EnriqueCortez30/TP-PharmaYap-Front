@@ -834,6 +834,7 @@ const HomePage: React.FC = () => {
         <p className="text-sm text-gray-600">
           &copy; 2025 PharmaYap. Todos los derechos reservados.
         </p>
+
       </footer>
     </div>
   );
